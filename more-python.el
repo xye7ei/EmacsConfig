@@ -174,10 +174,8 @@ the working directory. "
 	  "C-x p"	'python-open-shell-other-window
 	  ;; Following are based on ipython magic commands.
 	  "C-c h"	'ipython-help
-	  "C-c q"	'(lambda () (interactive)
-			'  (python-shell-send-string "q"))
-	  "C-c <RET>"	'(lambda () (interactive)
-			'  (python-shell-send-string "\n"))
+	  "C-c q"	'(lambda () (interactive) (python-shell-send-string "q"))
+	  "C-c <RET>"	'(lambda () (interactive) (python-shell-send-string "\n"))
 	  "C-c C-t"	'ipython-timeit-expression
 	  "C-c C-p"	'ipython-pdb
 	  "C-c C-d"	'ipython-debug-expression
