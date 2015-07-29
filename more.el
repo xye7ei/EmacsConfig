@@ -16,7 +16,7 @@
 (require 'rainbow-delimiters)
 
 (defun add-hooks (hooks funcs)
-  (dolist (h hooks)			; Mind the quoting ,hooks
+  (dolist (h hooks)
     (dolist (f funcs)
       (add-hook h f))))
 
@@ -32,7 +32,7 @@
     (dolist (m mode-maps)
       (define-key m (kbd (first k-f)) (second k-f)))))
 
-;; `paredit' functionalities is not suitable for other languages.
+;; `paredit' functionalities are not suitable for other languages.
 (add-hooks (list 'lisp-mode-hook
 		 'scheme-mode-hook
 		 'geiser-mode-hook
@@ -41,7 +41,7 @@
 		 'clojure-mode)
 	   (list 'paredit-mode))
 
-;;; general modes
+;;; General minor modes
 (add-hooks (list 'lisp-mode-hook
 		 'emacs-lisp-mode-hook
 		 'inferior-emacs-lisp-mode-hook
