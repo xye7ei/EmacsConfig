@@ -4,9 +4,6 @@
 (setq geiser-active-implementations '(racket))
 ;; (setq scheme-program-name "C:/Program Files/Racket/Racket.exe")
 ;; (setq geiser-racket-binary "C:/Program Files/Racket/Racket.exe")
-;; (require 'geiser-install)
-
-;;; Handle the issue of using geiser
 
 ;; (defun geiser-eval-till-here (start end)
 ;;   (interactive "rP")

@@ -1,3 +1,5 @@
+(defvar *my-clisp-program* "C:/Tools/ccl/wx86cl.exe")
+
 (defun slime-define-my-keys ()
   (define-keys
     (list lisp-mode-map)
@@ -21,6 +23,7 @@
   (load (expand-file-name
 	 "~/quicklisp/slime-helper.el"))
   (setq inferior-lisp-program
-	"C:/Tools/ccl/wx86cl.exe") 
+	*my-clisp-program*) 
   (add-hook 'slime
 	    'slime-define-my-keys))
+

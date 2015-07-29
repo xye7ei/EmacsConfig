@@ -69,19 +69,24 @@
  kept-old-versions 2
  version-control t)
 
+(defun load-my-config (fname)
+  (load-file (concat *my-config-dir* fname)))
+
 ;;; Enhanced key-bindings settings.
-(load-file "~/OneDrive/Code/more-keys.el")
-(load-file "~/OneDrive/Code/more-evil.el")
+(load-my-config "more-keys.el")
+(load-my-config "more-evil.el")
 
 ;;; Default language-specific loadings.
-(load-file "~/OneDrive/Code/more-lisp.el")
-(load-file "~/OneDrive/Code/more-scheme.el")
-(load-file "~/OneDrive/Code/more-python.el")
-(load-file "~/OneDrive/Code/more-haskell.el")
+(load-my-config "more-lisp.el")
+(load-my-config "more-scheme.el")
+(load-my-config "more-python.el")
+(load-my-config "more-haskell.el")
+
 ;;; Use (<apps> <apps> r) to load R-mode(ESS)
 ;;; This is seperated loaded to save start-up time.
-(load-file "~/OneDrive/Code/more-r.el")	
+(load-my-config "more-r.el")	
+
 ;;; Use (<apps> <apps> m) to load sml-mode
-(load-file "~/OneDrive/Code/more-sml.el")
+(load-my-config "more-sml.el")
 
 (setq default-directory "~/OneDrive/Code/")

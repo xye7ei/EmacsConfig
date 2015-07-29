@@ -1,11 +1,23 @@
 (require 'python)
 
 (defun python-open-shell-other-window ()
+  "Switch other window to python shell buffer. "
   (interactive)
   (switch-to-buffer-other-window "*Python*")
   (other-window -1))
 
 (defun python-object-at-point ()
+  "Fetch the python object at editing point.
+
+*. Examples (with bar symbol emulating the caret):
+
+    random.randint((|34 + 28), 5678)  			==>> random.randint
+    my_modu.my_func(her_modu.her_func(123|45, 67  	==>> her_modu.her_func
+    @a_decorator(|di, du) 				==>> a_decorator
+    my_modu.my_sub_modu.|my_func			==>> my_modu.my_sub_modu    ; ignoring first dot symbol
+
+*. Needs further tuning to work robustly.
+"
   (save-excursion
     (let ((rslt (buffer-substring-no-properties
 		 (progn (while (looking-back "[\(\)]") (backward-char))
@@ -17,6 +29,9 @@
       rslt)))
 
 (defun python-get-expression ()
+  "Fetch the python expression at editing point, i.e.
+1. Right hand side of some assignment statement;
+2. If not at assignment statement, then the whole line. "
   (save-excursion
     (progn
       (while (not (looking-back "[=\n#]")) (backward-char))
@@ -25,33 +40,39 @@
        (line-end-position)))))
 
 (defun stripped-line ()
+  "Current edited line with white spaces from both sides stripped. "
   (save-excursion
-    (buffer-substring-no-properties (progn
-				      (beginning-of-line)
-				      (while (looking-at "[\s#]") (forward-char))
-				      (point))
-				    (progn
-				      (end-of-line)
-				      (point)))))
+    (buffer-substring-no-properties
+     (progn (beginning-of-line)
+	    (while (looking-at "[\s#]") (forward-char))
+	    (point))
+     (progn (end-of-line)
+	    (point)))))
+
 (defun python-send-line ()
+  "Send current line to python shell. "
   (interactive)
   (save-excursion
     (python-shell-send-string (stripped-line))))
 
 (defun python-send-expression ()
+  "Send python expression at point to python shell. "
   (interactive)
   (let ((expr (python-get-expression)))
     (python-shell-send-string expr)))
 
 (defun python-send-line-and-newline ()
+  "Send python line at point to python shell.
+This allows editing with interpreting on-the-fly! "
   (interactive)
   (python-send-line)
   (newline))
 
 (defun use-ipython ()
+  "Assign ipython's working setups according to ipython official website. "
   (setq
    python-shell-interpreter "ipython"
-   python-shell-interpreter-args ""; "-i C:/Tools/Python33/Scripts/ipython-script.py console --matplotlib"
+   python-shell-interpreter-args ""; "-i C:/Tools/Python34/Scripts/ipython-script.py console --matplotlib"
    python-shell-prompt-regexp "In \\[[0-9]+\\]: "
    python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
    ;; python-shell-completion-setup-code
@@ -68,35 +89,40 @@
 ;;   (python-shell-send-string "%autoreload 2"))
 
 (defun ipython-ask-input ()
-  "Prompt string to send to ipython shell."
+  "Prompt string to send to ipython shell. "
   (interactive)
   (let* ((inp (read-from-minibuffer "[In]:")))
     (python-shell-send-string inp)))
 
 (defun ipython-help ()
+  "Send object-at-point appended with '?' to print help document in ipython shell. "
   (interactive)
   (python-shell-send-string
    (concat (python-object-at-point) "?"))) 
 
 (defun ipython-pdb ()
+  "Call pdb mode for current python file for debugging. "
   (interactive)
   (let ((cmd (format "python -m pdb %s"
 		     (buffer-file-name))))
     (pdb cmd)))
 
 (defun ipython-timeit-expression ()
+  "%timeit the python expression at point. "
   (interactive)
   (let ((expr (python-get-expression)))
     (python-shell-send-string
      (concat "%timeit " expr))))
 
-(defun ipython-debug-expression (
+(defun ipython-debug-expression ()
+  "%debug the python expression at point. "
   (interactive)
   (let ((expr (python-get-expression)))
     (python-shell-send-string
-     (concat "%debug " expr)))))
+     (concat "%debug " expr))))
 
 (defun ipython-doc-buffer ()
+  "NOT COMPLETED - show ipython help document of python-object in temporary buffer. "
   (interactive)
   (let ((expr (python-object-at-point)))
     ;; (add-hook 'temp-buffer-show-hook 'highlight-paren-mode)
@@ -107,17 +133,22 @@
 	(concat expr "?"))))))
 
 (defun ipython-set-current-directory ()
+  "Set ipython-shell's working directory to currently edited file's directory
+so that 'import' can work correctly. "
   (interactive)
   (python-shell-send-string-no-output
    (format "cd %s" (file-name-directory (buffer-file-name)))))
 
 (defun ipython-send-current-file ()
+  "Send currently edited file to ipython-shell as well as update
+the working directory. "
   (interactive)
   (save-buffer)
   (ipython-set-current-directory)
   (python-shell-send-file (buffer-file-name)))
 
 (defun ipython-dired ()
+  "Show ipython-shell's working directory. "
   (interactive)
   (let ((bf (buffer-file-name)))
     (python-shell-send-string
@@ -125,7 +156,6 @@
 	     (file-name-directory bf) bf))))
 
 (defun python-define-my-keys ()
-  "Hints for argument list of prepared function, which is not utilized by auto-complete"
   (define-keys
     (list python-mode-map
     	  inferior-python-mode-map)
@@ -153,12 +183,9 @@
 	  "C-c C-d"	'ipython-debug-expression
 	  "C-c <escape>"	'python-shell-switch-to-shell)))
 
-;; (python-define-my-keys)
 (use-ipython)
 
 (add-hook 'python-mode-hook #'python-define-my-keys)
 (add-hook 'inferior-python-mode-hook #'python-define-my-keys)
-
-(setenv "PYTHONPATH" "C:/Code/python")
 
 (global-set-key (kbd "<apps> <apps> p") 'run-python)

@@ -31,7 +31,8 @@
     (evil-search-word nil nil w))) 
 
 (defun more-evil ()
-  "Custom more evil keys. " 
+  "Customing more evil keys. " 
+  ;; C-? series for all evil-modes.
   (define-keys
     (list evil-insert-state-map
 	  evil-visual-state-map
@@ -51,6 +52,7 @@
 	  "C-4"     	'evil-window-bottom-right
 	  "C-`"		'evil-window-mru
 	  ))
+  ;; For evil-modes except insert-mode.
   (define-keys
     (list evil-visual-state-map		; except insert mode
 	  evil-normal-state-map
