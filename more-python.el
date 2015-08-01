@@ -169,8 +169,7 @@ the working directory. "
 	  "C-c C-l"	'ipython-send-current-file
 	  "C-c C-k"	'ipython-send-current-file
 	  "C-c l"	'python-send-line
-	  "C-c j"	'python-send-line-and-newline
-	  "C-c C-j"	'python-send-line-and-newline
+	  "C-M-j"	'python-send-line-and-newline
 	  "C-x p"	'python-open-shell-other-window
 	  ;; Following are based on ipython magic commands.
 	  "C-c h"	'ipython-help
@@ -187,3 +186,9 @@ the working directory. "
 (add-hook 'inferior-python-mode-hook #'python-define-my-keys)
 
 (global-set-key (kbd "<apps> <apps> p") 'run-python)
+
+
+;;; Integration of org-mode
+;; (org-babel-do-load-languages
+;;  'org-babel-load-languages
+;;  '((python . t)))
