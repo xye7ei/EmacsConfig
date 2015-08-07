@@ -90,3 +90,6 @@
 (load-my-config "more-sml.el")
 
 (setq default-directory "~/OneDrive/Code/")
+
+(setq org-format-latex-options
+      (plist-put org-format-latex-options :scale 1.5))
