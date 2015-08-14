@@ -6,9 +6,9 @@
   (other-window -1))
 
 (defun move-forward-paren (&optional arg)
-  "Move to the first halp-paren afterward, then jump over it."
+  "Move to the first half-paren afterward, then jump over it."
   (interactive "P")
-  (while (not (looking-at "[][\'\"\(\)\{\}]")) ; Matching brackets. [][...]
+  (while (not (looking-at "[][\'\"\(\)\{\}\n]")) ; Matching brackets. [][...]
     (forward-char 1))
   (forward-char 1))
 
@@ -178,5 +178,16 @@
 (global-set-key (kbd "C--")		'(lambda () (interactive)
 					   (increase-face-size -5)))
 
+;; (global-set-key (kbd "C-M-<SPC>") 'select-long-word)
+
+(global-set-key (kbd "C-M-[") '(lambda (arg)
+				 (interactive "P")
+				 (insert-pair arg ?\[ ?\])))
+(global-set-key (kbd "C-M-{") '(lambda (arg)
+				 (interactive "P")
+				 (insert-pair arg ?\{ ?\})))
+(global-set-key (kbd "C-M-\"") '(lambda (arg)
+				 (interactive "P")
+				 (insert-pair arg ?\" ?\")))
 
 (setq inhibit-startup-screen t)
