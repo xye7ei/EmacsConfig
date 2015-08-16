@@ -24,12 +24,14 @@
     (let ((beg (dotimes (i n (point)) 
 		 (skip-syntax-backward "w_")
 		 (when (< i (1- n))
-		   (skip-synwax-backward " ")))))
-      (values beg end))))
+		   (skip-syntax-backward " ")))))
+      (list beg end))))
 
 (defun select-long-word ()
   (interactive)
-  (destructuring-bind (beg end) (find-long-words-backward 1)
+  (let* ((beg-end (find-long-words-backward 1))
+	 (beg (car beg-end))
+	 (end (cadr beg-end)))
     (let ((word (buffer-substring-no-properties beg end)))
       (set-mark beg)
       (forward-char (- end beg)))))
@@ -112,22 +114,23 @@
 (defun mark-till-here (ARG)
   (interactive "P")
   (let ((phere (point)))
-    (goto-line 0)
+    (goto-char 0)
     (set-mark-command ARG)
     (goto-char phere)))
 
 ;; Emacs lisp key enhancement
-(define-keys
-  (list emacs-lisp-mode-map
-	lisp-interaction-mode-map)
-  (list "TAB"		'completion-at-point
-	"C-c 1"		'macroexpand-list
-	"C-c C-1"	'macroexpand-list-inplace
-	"C-c 2" 	'macroexpand-block
-	"C-c C-2" 	'macroexpand-block-inplace ;For elisp: inplace more agile
-	"C-c C-3" 	'macroexpand-all
-	"C-M-j"		'eval-print-last-sexp
-	)) 
+(let ((kms (list "TAB"		'completion-at-point
+		 "C-c 1"	'macroexpand-list
+		 "C-c C-1"	'macroexpand-list-inplace
+		 "C-c 2" 	'macroexpand-block
+		 "C-c C-2" 	'macroexpand-block-inplace ;For elisp: inplace more agile
+		 "C-c C-3" 	'macroexpand-all
+		 "C-M-j"	'eval-print-last-sexp)))
+  (while kms
+    (let ((k (pop kms))
+	  (f (pop kms)))
+      (define-key emacs-lisp-mode-map (kbd k) f)
+      (define-key lisp-interaction-mode-map (kbd k) f)))) 
 
 ;; Further settings.
 (menu-bar-mode -1)
@@ -152,6 +155,10 @@
 (global-set-key (kbd "<apps> l") 	'toggle-truncate-lines)
 (global-set-key (kbd "<apps> m") 	'toggle-menu-bar-mode-from-frame)
 
+(global-set-key (kbd "C-<up>") '(lambda () (interactive)
+				  (scroll-up 1)))
+(global-set-key (kbd "C-<down>") '(lambda () (interactive)
+				    (scroll-down 1)))
 
 
 ;;; Representative level controls.

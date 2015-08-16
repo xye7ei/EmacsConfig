@@ -1,3 +1,6 @@
+;;; Folder for my configuration files.
+(defvar *my-config-dir* "~/Documents/GitHub/EmacsConfig/")
+
 ;;; Settings for user interfaces.
 (put 'narrow-to-region 'disabled nil)
 (setq inhibit-splash-screen t) 
@@ -6,59 +9,44 @@
 (require 'package)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives
-	     '("org" . "http://orgmode.org/elpa/") t)
+;; (add-to-list 'package-archives
+;; 	     '("org" . "http://orgmode.org/elpa/") t)
 (package-initialize)
 
-(require 'cl)
-(require 'evil) (evil-mode 1)
+;; (require 'cl)
+;; (require 'evil)
+(evil-mode 1)
 (require 'pretty-lambdada)
 (require 'rainbow-delimiters)
 
-(defun add-hooks (hooks funcs)
-  (dolist (h hooks)
-    (dolist (f funcs)
-      (add-hook h f))))
-
-(defun 2-part-list (lst)
-  (and lst
-       (cons (list (car lst) (cadr lst))
-	     (2-part-list (cddr lst)))))
-
-(defun define-keys (mode-maps key-funcs)
-  " `mode-maps' is a list of mode-maps;
-`key-funcs' is a flat list of key-string and quoted-functions;"
-  (dolist (k-f (2-part-list key-funcs))
-    (dolist (m mode-maps)
-      (define-key m (kbd (first k-f)) (second k-f)))))
-
-;; `paredit' functionalities are not suitable for other languages.
-(add-hooks (list 'lisp-mode-hook
-		 'scheme-mode-hook
-		 'geiser-mode-hook
-		 'emacs-lisp-mode-hook
-		 'inferior-emacs-lisp-mode-hook
-		 'clojure-mode)
-	   (list 'paredit-mode))
+;; `paredit' functionalities are not suitable for languages other than lisp.
+(dolist (h '(lisp-mode-hook
+	     scheme-mode-hook
+	     geiser-mode-hook
+	     emacs-lisp-mode-hook
+	     inferior-emacs-lisp-mode-hook
+	     clojure-mode))
+  (add-hook h 'paredit-mode))
 
 ;;; General minor modes
-(add-hooks (list 'lisp-mode-hook
-		 'emacs-lisp-mode-hook
-		 'inferior-emacs-lisp-mode-hook
-		 'geiser-mode-hook
-		 'geiser-repl-mode-hook
-		 'clojure-mode
-		 'python-mode-hook
-		 'inferior-python-mode-hook
-		 'sml-mode-hook
-		 'inferior-sml-mode-hook
-		 'haskell-mode-hook
-		 'ess-mode-hook)
-	   (list 'show-paren-mode
-		 'turn-on-pretty-lambda-mode
-		 'electric-pair-mode
-		 'toggle-truncate-lines
-		 'rainbow-delimiters-mode))
+(dolist (h '(lisp-mode-hook
+	     emacs-lisp-mode-hook
+	     inferior-emacs-lisp-mode-hook
+	     geiser-mode-hook
+	     geiser-repl-mode-hook
+	     clojure-mode
+	     python-mode-hook
+	     inferior-python-mode-hook
+	     sml-mode-hook
+	     inferior-sml-mode-hook
+	     haskell-mode-hook
+	     ess-mode-hook))
+  (dolist (f '(show-paren-mode
+	       turn-on-pretty-lambda-mode
+	       electric-pair-mode
+	       toggle-truncate-lines
+	       rainbow-delimiters-mode))
+    (add-hook h f)))
 
 ; Backup settings.
 (setq
@@ -73,13 +61,14 @@
   (load-file (concat *my-config-dir* fname)))
 
 ;;; Enhanced key-bindings settings.
-(load-my-config "more-keys.el")
-(load-my-config "more-evil.el")
+(load-my-config "more-keys.elc")
+;;; Enhanced evil. Unuseful since emacs-mode can be activated by C-z
+;(load-my-config "more-evil.el")
 
 ;;; Default language-specific loadings.
-(load-my-config "more-lisp.el")
-(load-my-config "more-scheme.el")
-(load-my-config "more-python.el")
+;; (load-my-config "more-lisp.el")
+;; (load-my-config "more-scheme.el")
+(load-my-config "more-python.elc")
 (load-my-config "more-haskell.el")
 
 ;;; Use (<apps> <apps> r) to load R-mode(ESS)
@@ -91,6 +80,7 @@
 
 (setq default-directory "~/OneDrive/Code/")
 
-(require 'org)
-(setq org-format-latex-options
-      (plist-put org-format-latex-options :scale 1.5))
+(add-hook 'org-mode-hook
+	  '(lambda () (require 'org)
+	     (setq org-format-latex-options
+		   (plist-put org-format-latex-options :scale 1.5))))

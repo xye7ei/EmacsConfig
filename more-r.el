@@ -7,7 +7,10 @@
 ;;; management system.
 (defun load-R ()
   (interactive)
-  (add-to-list 'load-path "~/.emacs.d/ess-15.03-1/lisp/")
+  (when (not (package-installed-p 'ess))
+    (package-refresh-contents)
+    (package-install 'ess))
+  ;; (add-to-list 'load-path "~/.emacs.d/ess-15.03-1/lisp/")
   (autoload 'R-mode "ess-site.el" "ESS" t)
   (add-to-list 'auto-mode-alist '("\\.R$" . R-mode))
   (load "ess-site")

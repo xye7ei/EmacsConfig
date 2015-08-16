@@ -156,29 +156,30 @@ the working directory. "
 	     (file-name-directory bf) bf))))
 
 (defun python-define-my-keys ()
-  (define-keys
-    (list python-mode-map
-    	  inferior-python-mode-map)
-    (list "C-c"		nil 
-	  "C-c C-b"   	'python-shell-send-buffer
-	  "C-c C-f"   	'python-shell-send-file
-	  "C-c C-s"   	'python-shell-send-string
-	  "C-c C-r"   	'python-shell-send-region
-	  "C-c C-e"	'python-send-expression
-	  "C-x C-e"	'python-send-expression
-	  "C-c C-l"	'ipython-send-current-file
-	  "C-c C-k"	'ipython-send-current-file
-	  "C-c l"	'python-send-line
-	  "C-M-j"	'python-send-line-and-newline
-	  "C-x p"	'python-open-shell-other-window
-	  ;; Following are based on ipython magic commands.
-	  "C-c h"	'ipython-help
-	  "C-c q"	'(lambda () (interactive) (python-shell-send-string "q"))
-	  "C-c <RET>"	'(lambda () (interactive) (python-shell-send-string "\n"))
-	  "C-c C-t"	'ipython-timeit-expression
-	  "C-c C-p"	'ipython-pdb
-	  "C-c C-d"	'ipython-debug-expression
-	  "C-c <escape>"	'python-shell-switch-to-shell)))
+  (let ((pkms '("C-c"		nil 
+		"C-c C-b"   	python-shell-send-buffer
+		"C-c C-f"   	python-shell-send-file
+		"C-c C-s"   	python-shell-send-string
+		"C-c C-r"   	python-shell-send-region
+		"C-c C-e"	python-send-expression
+		"C-x C-e"	python-send-expression
+		"C-c C-l"	ipython-send-current-file
+		"C-c C-k"	ipython-send-current-file
+		"C-c l"	python-send-line
+		"C-M-j"	python-send-line-and-newline
+		"C-x p"	python-open-shell-other-window
+		;; Following are based on ipython magic commands.
+		"C-c h"	ipython-help
+		"C-c q"	(lambda () (interactive) (python-shell-send-string "q"))
+		"C-c <RET>"	(lambda () (interactive) (python-shell-send-string "\n"))
+		"C-c C-t"	ipython-timeit-expression
+		"C-c C-p"	ipython-pdb
+		"C-c C-d"	ipython-debug-expression
+		"C-c <escape>"	python-shell-switch-to-shell)))
+    (while pkms
+      (let* ((k (pop pkms))
+	     (m (pop pkms))) 
+	(define-key python-mode-map (kbd k) m)))))
 
 (use-ipython)
 
