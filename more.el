@@ -61,28 +61,29 @@
   (load-file (concat *my-config-dir* fname)))
 
 ;;; Enhanced key-bindings settings.
-(load-my-config "more-keys.elc")
-;;; Enhanced evil. Unuseful since emacs-mode can be activated by C-z
-;(load-my-config "more-evil.el")
+(load-my-config "more-keys.el")
 
-;;; Default language-specific loadings.
-;; (load-my-config "more-lisp.el")
-;; (load-my-config "more-scheme.el")
-(load-my-config "more-python.elc")
+;;; For languages.
+(load-my-config "more-python.el")
 (load-my-config "more-haskell.el")
 
-;;; Use (<apps> <apps> r) to load R-mode(ESS)
+;;; Use (<apps> <apps> r) to load R-mode(ESS).
 ;;; This is seperated loaded to save start-up time.
 (load-my-config "more-r.el")	
 
-;;; Use (<apps> <apps> m) to load sml-mode
+;;; Use (<apps> <apps> m) to load sml-mode.
 (load-my-config "more-sml.el")
 
 (setq default-directory "~/OneDrive/Code/")
 
-;;; Tiny adjustment for using TeX
+;;; Tiny adaption for using TeX.
 (add-hook 'org-mode-hook
 	  '(lambda () (require 'org)
 	     (setq org-format-latex-options
-		   (plist-put org-format-latex-options :scale 1.5))))
-(set-default 'preview-scale-function 1.5)
+		   (plist-put org-format-latex-options :scale 1.4))))
+(set-default 'preview-scale-function 1.4)
+
+;; Further settings.
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)

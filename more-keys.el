@@ -132,10 +132,6 @@
       (define-key emacs-lisp-mode-map (kbd k) f)
       (define-key lisp-interaction-mode-map (kbd k) f)))) 
 
-;; Further settings.
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
 
 (global-set-key (kbd "C-S-SPC")		'mark-till-here)
 
@@ -156,9 +152,9 @@
 (global-set-key (kbd "<apps> m") 	'toggle-menu-bar-mode-from-frame)
 
 (global-set-key (kbd "C-<up>") '(lambda () (interactive)
-				  (scroll-up 1)))
+				  (scroll-up 3)))
 (global-set-key (kbd "C-<down>") '(lambda () (interactive)
-				    (scroll-down 1)))
+				    (scroll-down 3)))
 
 
 ;;; Representative level controls.
@@ -196,5 +192,3 @@
 (global-set-key (kbd "C-M-\"") '(lambda (arg)
 				 (interactive "P")
 				 (insert-pair arg ?\" ?\")))
-
-(setq inhibit-startup-screen t)
