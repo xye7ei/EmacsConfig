@@ -80,7 +80,9 @@
 
 (setq default-directory "~/OneDrive/Code/")
 
+;;; Tiny adjustment for using TeX
 (add-hook 'org-mode-hook
 	  '(lambda () (require 'org)
 	     (setq org-format-latex-options
 		   (plist-put org-format-latex-options :scale 1.5))))
+(set-default 'preview-scale-function 1.5)
