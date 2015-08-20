@@ -81,7 +81,15 @@
 	  '(lambda () (require 'org)
 	     (setq org-format-latex-options
 		   (plist-put org-format-latex-options :scale 1.4))))
+<<<<<<< HEAD
 (set-default 'preview-scale-function 1.2)
+=======
+(set-default 'preview-scale-function 1.4)
+(add-hook 'latex-mode-hook
+	  '(add-to-list 'TeX-view-program-selection '(output-pdf "sumatraPDF")))
+(add-hook 'LaTeX-mode-hook
+	  '(add-to-list 'TeX-view-program-selection '(output-pdf "sumatraPDF")))
+>>>>>>> origin/master
 
 ;; Further settings.
 (menu-bar-mode -1)
