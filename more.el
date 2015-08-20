@@ -81,7 +81,7 @@
 	  '(lambda () (require 'org)
 	     (setq org-format-latex-options
 		   (plist-put org-format-latex-options :scale 1.4))))
-(set-default 'preview-scale-function 1.4)
+(set-default 'preview-scale-function 1.2)
 
 ;; Further settings.
 (menu-bar-mode -1)
