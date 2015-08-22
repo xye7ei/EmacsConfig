@@ -12,16 +12,16 @@
 *. Examples (with bar symbol emulating the caret):
 
     random.randint((|34 + 28), 5678)  			==>> random.randint
-    my_modu.my_func(her_modu.her_func(123|45, 67  	==>> her_modu.her_func
+    my_modu.my_func(her_modu.her_func(123|45, 67  	==>> 12345
     @a_decorator(|di, du) 				==>> a_decorator
-    my_modu.my_sub_modu.|my_func			==>> my_modu.my_sub_modu    ; ignoring first dot symbol
+    my_modu.my_sub_modu.|my_func			==>> my_modu.my_sub_modu.my_func
 
 *. Needs further tuning to work robustly.
 "
   (save-excursion
     (let ((rslt (buffer-substring-no-properties
-		 (progn (while (looking-back "[\(\)]") (backward-char))
-			(while (looking-back "[^ @\(\)]") (backward-char))
+		 (progn (while (looking-back "[\(\)\.]") (backward-char))
+			(while (looking-back "[^ #@\(\)]") (backward-char))
 			(point))
 		 (progn (skip-syntax-forward "w_.")
 			(skip-syntax-backward ".")
