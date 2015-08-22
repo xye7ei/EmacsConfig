@@ -1,11 +1,6 @@
 ;;; Folder for my configuration files.
 (defvar *my-config-dir* "~/Documents/GitHub/EmacsConfig/")
 
-;;; Settings for user interfaces.
-(put 'narrow-to-region 'disabled nil)
-(setq inhibit-splash-screen t) 
-(setq find-function-C-source-directory "C:/Tools/emacs/src")
-
 (require 'package)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/") t)
@@ -61,37 +56,32 @@
   (load-file (concat *my-config-dir* fname)))
 
 ;;; Enhanced key-bindings settings.
-(load-my-config "more-keys.el")
-
+(load-my-config "more-keys.el") 
+;;; For TeX
+(load-my-config "more-tex.el") 
 ;;; For languages.
 (load-my-config "more-python.el")
-(load-my-config "more-haskell.el")
-
-;;; Use (<apps> <apps> r) to load R-mode(ESS).
-;;; This is seperated loaded to save start-up time.
-(load-my-config "more-r.el")	
-
-;;; Use (<apps> <apps> m) to load sml-mode.
+(load-my-config "more-haskell.el") 
+;;; For R
+(load-my-config "more-r.el") 
 (load-my-config "more-sml.el")
 
-(setq default-directory "~/OneDrive/Code/")
 
-;;; Tiny adaption for using TeX.
-(add-hook 'org-mode-hook
-	  '(lambda () (require 'org)
-	     (setq org-format-latex-options
-		   (plist-put org-format-latex-options :scale 1.4))))
+;;; Customizing working environment.
+(setq default-directory "~/OneDrive/") 
+(set-language-environment "UTF-8")
+(defun my-copy-to-drive-active ()
+  (interactive)
+  (copy-file (buffer-file-name)
+	     (format "~/OneDrive/Active/%s" (buffer-name))))
+(defun my-delete-from-drive-active ()
+  (interactive)
+  (delete-file (format "~/OneDrive/Active/%s" (buffer-name))))
 
-(set-default 'preview-scale-function 1.2)
-=======
-(set-default 'preview-scale-function 1.4)
-(add-hook 'latex-mode-hook
-	  '(add-to-list 'TeX-view-program-selection '(output-pdf "sumatraPDF")))
-(add-hook 'LaTeX-mode-hook
-	  '(add-to-list 'TeX-view-program-selection '(output-pdf "sumatraPDF")))
-
-
-;; Further settings.
+;;; Settings for user interfaces.
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
-(tool-bar-mode -1)
+(tool-bar-mode -1) 
+(put 'narrow-to-region 'disabled nil)
+(setq inhibit-splash-screen t) 
+(setq find-function-C-source-directory "C:/Tools/emacs/src")
