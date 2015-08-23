@@ -11,13 +11,15 @@
 	       ("[equation]" ("equation"))
 	       ("[itemize...]" ("itemize"))
 	       ("[tabular]" ("tabular"))
-	       ("[align*]" ("align*"))))
+	       ("[align*]" ("align*"))
+	       ("[center]" ("center"))))
     (add-to-list 'TeX-fold-env-spec-list c)))
 
 (defun my-TeX-to-onerive ()
   (interactive)
   (copy-file (buffer-file-name)
-	     (format "~/OneDrive/Active/%s" (buffer-name))))
+	     (format "~/OneDrive/Active/%s" (buffer-name))
+	     1))
 
 (defun my-TeX-config () 
   (my-expand-TeX-fold-env)
