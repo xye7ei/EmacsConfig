@@ -8,9 +8,13 @@
 ;; 	     '("org" . "http://orgmode.org/elpa/") t)
 (package-initialize)
 
-;; (require 'cl)
-;; (require 'evil)
+;;; Use emacs state instead of evil-normal-state
 (evil-mode 1)
+(defalias 'evil-insert-state 'evil-emacs-state)
+(add-hook 'evil-emacs-state-entry-hook
+	  '(lambda () (interactive)
+	     (define-key evil-emacs-state-map (kbd "<ESC> [") 'evil-exit-emacs-state)))
+
 (require 'pretty-lambdada)
 (require 'rainbow-delimiters)
 
@@ -43,15 +47,6 @@
 	       rainbow-delimiters-mode))
     (add-hook h f)))
 
-; Backup settings.
-(setq
- backup-by-copying t
- backup-directory-alist '(("." . "~/.emacs.s"))
- delete-old-versions t
- kept-new-versions 3
- kept-old-versions 2
- version-control t)
-
 (defun load-my-config (fname)
   (load-file (concat *my-config-dir* fname)))
 
@@ -68,8 +63,6 @@
 
 
 ;;; Customizing working environment.
-(setq default-directory "~/OneDrive/") 
-(set-language-environment "UTF-8")
 (defun my-copy-to-drive-active ()
   (interactive)
   (copy-file (buffer-file-name)
@@ -78,6 +71,15 @@
   (interactive)
   (delete-file (format "~/OneDrive/Active/%s" (buffer-name))))
 
+;;; Backup settings.
+(setq
+ backup-by-copying t
+ backup-directory-alist '(("." . "~/.emacs.s"))
+ delete-old-versions t
+ kept-new-versions 3
+ kept-old-versions 2
+ version-control t)
+
 ;;; Settings for user interfaces.
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
@@ -85,3 +87,7 @@
 (put 'narrow-to-region 'disabled nil)
 (setq inhibit-splash-screen t) 
 (setq find-function-C-source-directory "C:/Tools/emacs/src")
+
+;;; 
+(setq default-directory "~/OneDrive/") 
+(set-language-environment "UTF-8")
