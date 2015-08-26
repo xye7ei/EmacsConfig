@@ -68,6 +68,14 @@ This allows editing with interpreting on-the-fly! "
   (python-send-line)
   (newline))
 
+(defun python-send-paragraph ()
+  (interactive)
+  (backward-paragraph)
+  (let ((a (point)))
+    (forward-paragraph)
+    (python-send-string
+     (python-shell-send-string-no-output (buffer-substring-no-properties a (point))))))
+
 (defun use-ipython ()
   "Assign ipython's working setups according to ipython official website. "
   (setq
@@ -163,14 +171,16 @@ the working directory. "
 		"C-c C-r"   	python-shell-send-region
 		"C-c C-e"	python-send-expression
 		"C-x C-e"	python-send-expression
+		"C-c M-h"	python-send-paragraph
+		"C-c l"		python-send-line
+		"C-c j"		python-send-line-and-newline
+		"C-c b"		python-send-paragraph
+		"C-x C-p"	python-open-shell-other-window
+		;; Following are based on ipython magic commands.
 		"C-c C-l"	ipython-send-current-file
 		"C-c C-k"	ipython-send-current-file
-		"C-c l"	python-send-line
-		"C-M-j"	python-send-line-and-newline
-		"C-x p"	python-open-shell-other-window
-		;; Following are based on ipython magic commands.
-		"C-c h"	ipython-help
-		"C-c q"	(lambda () (interactive) (python-shell-send-string "q"))
+		"C-c C-h"	ipython-help
+		"C-c q"		(lambda () (interactive) (python-shell-send-string "q"))
 		"C-c <RET>"	(lambda () (interactive) (python-shell-send-string "\n"))
 		"C-c C-t"	ipython-timeit-expression
 		"C-c C-p"	ipython-pdb

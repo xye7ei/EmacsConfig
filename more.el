@@ -11,13 +11,18 @@
 ;;; Use emacs state instead of evil-normal-state
 (evil-mode 1)
 ;; (defalias 'evil-insert-state 'evil-emacs-state)
+(setq evil-normal-state-cursor '(box "#00E600"))
 (add-hook 'evil-emacs-state-entry-hook
 	  '(lambda () (interactive)
+	     (setq evil-emacs-state-cursor '(box "black"))
 	     (define-key evil-emacs-state-map (kbd "<ESC> [") 'evil-exit-emacs-state)))
-(setq evil-emacs-state-cursor '(box "black"))
-(setq evil-normal-state-cursor '(box "purple"))
-(setq evil-insert-state-cursor '((bar . 1) "purple"))
-(setq evil-motion-state-cursor '(box "blue"))
+;; (setq evil-insert-state-cursor '((bar . 1) "purple"))
+;; (setq evil-motion-state-cursor '(box "blue"))
+(global-set-key (kbd "C-c o C-f") 'hs-minor-mode)
+(global-set-key (kbd "C-c o C-e") 'hs-toggle-hiding)
+(global-set-key (kbd "C-c o e") 'hs-toggle-hiding)
+(global-set-key (kbd "C-c o C-b") 'hs-hide-all)
+(global-set-key (kbd "C-c o b") 'hs-show-all)
 
 (require 'pretty-lambdada)
 (require 'rainbow-delimiters)
