@@ -152,9 +152,9 @@
 (global-set-key (kbd "<apps> m") 	'toggle-menu-bar-mode-from-frame)
 
 (global-set-key (kbd "C-<up>") '(lambda () (interactive)
-				  (scroll-up 3)))
+				  (scroll-up 2)))
 (global-set-key (kbd "C-<down>") '(lambda () (interactive)
-				    (scroll-down 3)))
+				    (scroll-down 2)))
 
 
 ;;; Representative level controls.
