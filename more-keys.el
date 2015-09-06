@@ -167,14 +167,18 @@
   (let ((h (face-attribute 'default :height)))
     (set-face-attribute 'default nil :height (+ h x))))
 
+(defun set-transparency (x)
+  (set-frame-parameter nil 'alpha (list x x)))
+
 (defun change-transparency (ARG)
   (interactive "nInput alpha value: ")
-  (let* ((p (frame-parameter nil 'alpha))
-	 (a (car p)))
-    (set-frame-parameter nil 'alpha
-			 (list ARG ARG))))
+  (set-transparency ARG))
 
 (global-set-key (kbd "<apps> t") 	'change-transparency)
+(global-set-key (kbd "<apps> ,") 	'(lambda () (interactive)
+					   (set-transparency 20)))
+(global-set-key (kbd "<apps> .") 	'(lambda () (interactive)
+					   (set-transparency 90)))
 (global-set-key (kbd "<apps> f") 	'change-face-size)
 (global-set-key (kbd "C-=") 		'(lambda () (interactive)
 					   (increase-face-size 5)))
