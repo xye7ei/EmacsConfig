@@ -36,6 +36,14 @@
       (set-mark beg)
       (forward-char (- end beg)))))
 
+(defun mark-long-sexp ()
+  (interactive) 
+  (progn (backward-sexp)
+	 (set-mark (point))
+	 (forward-sexp)
+	 (if (looking-back "\s")
+	     (backward-char))))
+
 ;; Extend emacs lisp utilities 
 (defun eval-list ()
   (interactive)
@@ -174,6 +182,10 @@
   (interactive "nInput alpha value: ")
   (set-transparency ARG))
 
+(defun hs ()
+  (interactive)
+  (hs-minor-mode))
+
 (global-set-key (kbd "<apps> t") 	'change-transparency)
 (global-set-key (kbd "<apps> ,") 	'(lambda () (interactive)
 					   (set-transparency 20)))
@@ -185,7 +197,7 @@
 (global-set-key (kbd "C--")		'(lambda () (interactive)
 					   (increase-face-size -5)))
 
-;; (global-set-key (kbd "C-M-<SPC>") 'select-long-word)
+(global-set-key (kbd "C-M-<SPC>") 'mark-long-sexp)
 
 (global-set-key (kbd "C-M-[") '(lambda (arg)
 				 (interactive "P")

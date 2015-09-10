@@ -28,13 +28,15 @@
 			(point)))))
       rslt)))
 
-(defun python-get-expression ()
+(defun python-expression-at-point ()
   "Fetch the python expression at editing point, i.e.
 1. Right hand side of some assignment statement;
 2. If not at assignment statement, then the whole line. "
   (save-excursion
     (progn
       (while (not (looking-back "[=\n#]")) (backward-char))
+      (when (looking-at "\s")
+	(forward-char 1))
       (buffer-substring-no-properties
        (point)
        (line-end-position)))))
@@ -58,7 +60,7 @@
 (defun python-send-expression ()
   "Send python expression at point to python shell. "
   (interactive)
-  (let ((expr (python-get-expression)))
+  (let ((expr (python-expression-at-point)))
     (python-shell-send-string expr)))
 
 (defun python-send-line-and-newline ()
@@ -118,27 +120,25 @@ This allows editing with interpreting on-the-fly! "
 (defun ipython-timeit-expression ()
   "%timeit the python expression at point. "
   (interactive)
-  (let ((expr (python-get-expression)))
+  (let ((expr (python-expression-at-point)))
     (python-shell-send-string
      (concat "%timeit " expr))))
 
 (defun ipython-debug-expression ()
   "%debug the python expression at point. "
   (interactive)
-  (let ((expr (python-get-expression)))
+  (let ((expr (python-expression-at-point)))
     (python-shell-send-string
      (concat "%debug " expr))))
 
-(defun ipython-doc-buffer ()
+(defun python-doc-buffer ()
   "NOT COMPLETED - show ipython help document of python-object in temporary buffer. "
   (interactive)
   (let ((expr (python-object-at-point)))
-    ;; (add-hook 'temp-buffer-show-hook 'highlight-paren-mode)
-    ;; (add-hook 'temp-buffer-show-hook 'rainbow-delimiters-mode)
     (with-output-to-temp-buffer "*ipython-documentation*"
       (princ
        (python-shell-send-string-no-output
-	(concat expr "?"))))))
+	(format "help(%s)" expr))))))
 
 (defun ipython-set-current-directory ()
   "Set ipython-shell's working directory to currently edited file's directory
@@ -174,8 +174,10 @@ the working directory. "
 		"C-c M-h"	python-send-paragraph
 		"C-c l"		python-send-line
 		"C-c j"		python-send-line-and-newline
+		"C-M-j"		python-send-line-and-newline
 		"C-c b"		python-send-paragraph
 		"C-x C-p"	python-open-shell-other-window
+		"C-c <tab>"	python-doc-buffer 
 		;; Following are based on ipython magic commands.
 		"C-c C-l"	ipython-send-current-file
 		"C-c C-k"	ipython-send-current-file
@@ -193,13 +195,7 @@ the working directory. "
 
 (use-ipython)
 
-(add-hook 'python-mode-hook #'python-define-my-keys)
-(add-hook 'inferior-python-mode-hook #'python-define-my-keys)
+(add-hook 'python-mode-hook 'python-define-my-keys)
+;; (add-hook 'inferior-python-mode-hook #'python-define-my-keys)
 
 (global-set-key (kbd "<apps> <apps> p") 'run-python)
-
-
-;;; Integration of org-mode
-;; (org-babel-do-load-languages
-;;  'org-babel-load-languages
-;;  '((python . t)))

@@ -49,10 +49,13 @@
 (load-my-config "more-tex.el") 
 ;;; For languages.
 (load-my-config "more-python.el")
-(load-my-config "more-haskell.el") 
+;; (load-my-config "more-haskell.el") 
 ;;; For R
 (load-my-config "more-r.el") 
+;;; For sml
 (load-my-config "more-sml.el")
+;;; For scheme
+(custom-set-variables '(scheme-program-name "petite"))
 
 
 ;;; Customizing working environment.
