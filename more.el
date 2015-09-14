@@ -1,5 +1,5 @@
 ;;; Folder for my configuration files.
-(defconst *my-config-dir* "~/Documents/GitHub/EmacsConfig/")
+;;; (defconst *my-config-dir* "~/Documents/GitHub/EmacsConfig/")
 
 (require 'package)
 (add-to-list 'package-archives
@@ -8,8 +8,18 @@
 ;; 	     '("org" . "http://orgmode.org/elpa/") t)
 (package-initialize)
 
+(unless package-archive-contents
+  (package-refresh-contents))
+
+(dolist (p '(pretty-lambdada
+	     rainbow-delimiters
+	     paredit))
+  (unless (package-installed-p p)
+    (package-install p)))
+
 (require 'pretty-lambdada)
 (require 'rainbow-delimiters)
+(require 'paredit)
 
 ;; `paredit' functionalities are not suitable for languages other than lisp.
 (dolist (h '(lisp-mode-hook
