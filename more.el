@@ -65,7 +65,8 @@
 ;;; For sml
 (load-my-config "more-sml.el")
 ;;; For scheme
-(custom-set-variables '(scheme-program-name "petite"))
+;; (custom-set-variables '(scheme-program-name "petite"))
+(custom-set-variables '(scheme-program-name "racket"))
 
 
 ;;; Customizing working environment.
