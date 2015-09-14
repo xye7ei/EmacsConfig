@@ -4,51 +4,55 @@
 (require 'package)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/") t)
-;; (add-to-list 'package-archives
-;; 	     '("org" . "http://orgmode.org/elpa/") t)
-(package-initialize)
-
 (unless package-archive-contents
   (package-refresh-contents))
 
-(dolist (p '(pretty-lambdada
+(dolist (p '(evil
+	     pretty-lambdada
 	     rainbow-delimiters
-	     paredit))
+	     paredit
+	     ))
   (unless (package-installed-p p)
     (package-install p)))
 
-(require 'pretty-lambdada)
-(require 'rainbow-delimiters)
-(require 'paredit)
+(package-initialize)
+
+;; (require 'pretty-lambdada)
+;; (require 'rainbow-delimiters)
+
+(defun my-general-modes ()
+  (show-paren-mode)
+  (pretty-lambda-mode)
+  (turn-on-pretty-lambda-mode)
+  (electric-pair-mode)
+  (rainbow-delimiters-mode))
+
+(add-hook 'lisp-mode-hook 			'my-general-modes)
+(add-hook 'emacs-lisp-mode-hook 		'my-general-modes)
+(add-hook 'inferior-emacs-lisp-mode-hook 	'my-general-modes)
+(add-hook 'geiser-mode-hook 			'my-general-modes)
+(add-hook 'geiser-repl-mode-hook 		'my-general-modes)
+;; (add-hook 'clojure-mode-hook 			'my-general-modes)
+(add-hook 'python-mode-hook 			'my-general-modes)
+(add-hook 'inferior-python-mode-hook 		'my-general-modes)
+(add-hook 'sml-mode-hook 			'my-general-modes)
+(add-hook 'inferior-sml-mode-hook 		'my-general-modes)
+;; (add-hook 'haskell-mode-hook 			'my-general-modes)
+;; (add-hook 'ess-mode-hook 			'my-general-modes)
+
+(defun my-lisp-modes ()
+  (my-general-modes)
+  ;; (require 'paredit)
+  (paredit-mode))
 
 ;; `paredit' functionalities are not suitable for languages other than lisp.
-(dolist (h '(lisp-mode-hook
-	     scheme-mode-hook
-	     geiser-mode-hook
-	     emacs-lisp-mode-hook
-	     inferior-emacs-lisp-mode-hook
-	     clojure-mode))
-  (add-hook h 'paredit-mode))
+(add-hook 'lisp-mode-hook 'paredit-mode)
+(add-hook 'scheme-mode-hook              'my-lisp-modes)
+(add-hook 'geiser-mode-hook              'my-lisp-modes)
+(add-hook 'emacs-lisp-mode-hook          'my-lisp-modes)
+(add-hook 'inferior-emacs-lisp-mode-hook 'my-lisp-modes)
+;; (add-hook 'clojure-mode                  'my-lisp-modes)
 
-;;; General minor modes
-(dolist (h '(lisp-mode-hook
-	     emacs-lisp-mode-hook
-	     inferior-emacs-lisp-mode-hook
-	     geiser-mode-hook
-	     geiser-repl-mode-hook
-	     clojure-mode
-	     python-mode-hook
-	     inferior-python-mode-hook
-	     sml-mode-hook
-	     inferior-sml-mode-hook
-	     haskell-mode-hook
-	     ess-mode-hook))
-  (dolist (f '(show-paren-mode
-	       turn-on-pretty-lambda-mode
-	       electric-pair-mode
-	       toggle-truncate-lines
-	       rainbow-delimiters-mode))
-    (add-hook h f)))
 
 (defun load-my-config (fname)
   (load-file (concat *my-config-dir* fname)))
@@ -61,7 +65,7 @@
 (load-my-config "more-python.el")
 ;; (load-my-config "more-haskell.el") 
 ;;; For R
-(load-my-config "more-r.el") 
+; (load-my-config "more-r.el") 
 ;;; For sml
 (load-my-config "more-sml.el")
 ;;; For scheme
@@ -73,10 +77,10 @@
 (defun my-copy-to-drive-active ()
   (interactive)
   (copy-file (buffer-file-name)
-	     (format "~/OneDrive/Active/%s" (buffer-name))))
+	     (format "~/../../OneDrive/Active/%s" (buffer-name))))
 (defun my-delete-from-drive-active ()
   (interactive)
-  (delete-file (format "~/OneDrive/Active/%s" (buffer-name))))
+  (delete-file (format "~/../../OneDrive/Active/%s" (buffer-name))))
 
 ;;; Backup settings.
 (setq
