@@ -105,5 +105,5 @@
 (evil-mode 1)
 
 ;;; 
-(setq default-directory "~/OneDrive/") 
+;; (setq default-directory "~/OneDrive/") 
 (set-language-environment "UTF-8")
