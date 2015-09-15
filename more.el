@@ -17,11 +17,6 @@
   (unless (package-installed-p p)
     (package-install p)))
 
-(package-initialize)
-
-;; (require 'pretty-lambdada)
-;; (require 'rainbow-delimiters)
-
 (defun my-general-modes ()
   (show-paren-mode)
   (pretty-lambda-mode)
