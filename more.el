@@ -7,6 +7,8 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
+(package-initialize)
+
 (dolist (p '(evil
 	     pretty-lambdada
 	     rainbow-delimiters
