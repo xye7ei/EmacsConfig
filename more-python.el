@@ -85,6 +85,7 @@ This allows editing with interpreting on-the-fly! "
    python-shell-interpreter-args ""; "-i C:/Tools/Python34/Scripts/ipython-script.py console --matplotlib"
    python-shell-prompt-regexp "In \\[[0-9]+\\]: "
    python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+   ;; Supporting auto-completion in emacs even when PyReadline not available in windows. 
    python-shell-completion-setup-code
    "from IPython.core.completerlib import module_completion"
    python-shell-completion-module-string-code
