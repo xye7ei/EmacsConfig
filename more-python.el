@@ -194,7 +194,8 @@ the working directory. "
 	     (m (pop pkms))) 
 	(define-key python-mode-map (kbd k) m)))))
 
-(use-ipython)
+(when (executable-find "ipython")
+  (use-ipython))
 
 (add-hook 'python-mode-hook 'python-define-my-keys)
 ;; (add-hook 'inferior-python-mode-hook #'python-define-my-keys)
