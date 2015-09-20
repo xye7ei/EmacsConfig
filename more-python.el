@@ -164,6 +164,10 @@ the working directory. "
      (format "\"%s %s\""
 	     (file-name-directory bf) bf))))
 
+(defun python-run-file-with-shell ()
+  (interactive)
+  (shell-command (format "python %s &" (buffer-file-name))))
+
 (defun python-define-my-keys ()
   (let ((pkms '("C-c"		nil 
 		"C-c C-b"   	python-shell-send-buffer
@@ -179,6 +183,7 @@ the working directory. "
 		"C-c b"		python-send-paragraph
 		"C-x C-p"	python-open-shell-other-window
 		"C-c <tab>"	python-doc-buffer 
+		"C-c !"		python-run-file-with-shell
 		;; Following are based on ipython magic commands.
 		"C-c C-l"	ipython-send-current-file
 		"C-c C-k"	ipython-send-current-file
