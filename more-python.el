@@ -68,6 +68,7 @@
 This allows editing with interpreting on-the-fly! "
   (interactive)
   (python-send-line)
+  (move-end-of-line 1)
   (newline))
 
 (defun python-send-paragraph ()
@@ -164,32 +165,30 @@ the working directory. "
      (format "\"%s %s\""
 	     (file-name-directory bf) bf))))
 
-(defun python-run-file-with-shell ()
+(defun python-run-file-in-os ()
   (interactive)
   (shell-command (format "python %s &" (buffer-file-name))))
 
 (defun python-define-my-keys ()
   (let ((pkms '("C-c"		nil 
-		"C-c C-b"   	python-shell-send-buffer
-		"C-c C-f"   	python-shell-send-file
-		"C-c C-s"   	python-shell-send-string
-		"C-c C-r"   	python-shell-send-region
-		"C-c C-e"	python-send-expression
+		;; Some are already covered in `python.el'
+		;; "C-c C-b"   	python-shell-send-buffer
+		;; "C-c C-f"   	python-shell-send-file
+		;; "C-c C-s"   	python-shell-send-string
+		;; "C-c C-r"   	python-shell-send-region
 		"C-x C-e"	python-send-expression
 		"C-c M-h"	python-send-paragraph
 		"C-c l"		python-send-line
-		"C-c j"		python-send-line-and-newline
 		"C-M-j"		python-send-line-and-newline
-		"C-c b"		python-send-paragraph
 		"C-x C-p"	python-open-shell-other-window
 		"C-c <tab>"	python-doc-buffer 
-		"C-c !"		python-run-file-with-shell
+		"C-c !"		python-run-file-in-os
 		;; Following are based on ipython magic commands.
-		"C-c C-l"	ipython-send-current-file
+		;; "C-c C-l"	ipython-send-current-file
 		"C-c C-k"	ipython-send-current-file
 		"C-c C-h"	ipython-help
-		"C-c q"		(lambda () (interactive) (python-shell-send-string "q"))
-		"C-c <RET>"	(lambda () (interactive) (python-shell-send-string "\n"))
+		;; "C-c q"		(lambda () (interactive) (python-shell-send-string "q"))
+		;; "C-c <RET>"	(lambda () (interactive) (python-shell-send-string "\n"))
 		"C-c C-t"	ipython-timeit-expression
 		"C-c C-p"	ipython-pdb
 		"C-c C-d"	ipython-debug-expression
