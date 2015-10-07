@@ -24,8 +24,9 @@
 "
   (save-excursion
     (let ((rslt (buffer-substring-no-properties
-		 (progn (while (looking-back "[\(\)\.]") (backward-char))
-			(while (looking-back "[^ #@\(\)]") (backward-char))
+		 (progn (skip-syntax-backward "()")  ; go back through parens
+			(skip-syntax-backward "w_.") ; go back through object syntax
+			(skip-syntax-forward ".")    ; if looking at ., jump it
 			(point))
 		 (progn (skip-syntax-forward "w_.")
 			(skip-syntax-backward ".")
@@ -80,7 +81,7 @@ This allows editing with interpreting on-the-fly! "
   (backward-paragraph)
   (let ((a (point)))
     (forward-paragraph)
-    (python-send-string
+    (python-shell-internal-send-string
      (python-shell-send-string-no-output (buffer-substring-no-properties a (point))))))
 
 (defun my-use-ipython ()
@@ -93,7 +94,7 @@ This allows editing with interpreting on-the-fly! "
    ;; Supporting auto-completion in emacs even when PyReadline not available in windows. 
    python-shell-completion-setup-code
    "from IPython.core.completerlib import module_completion"
-   python-shell-completion-module-string-code
+   python-shell-completion-string-code
    "';'.join(module_completion('''%s'''))\n"
    python-shell-completion-string-code
    "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
@@ -102,7 +103,7 @@ This allows editing with interpreting on-the-fly! "
 ;; (defun ipython-autoreload ()
 ;;   (interactive)
 ;;   (python-shell-send-string "%load_ext autoreload")
-;;   (python-shell-send-string "%autoreload 2"))
+;;   (python-shell-send-string "%autoreload 0"))
 
 (defun my-ipython-ask-input ()
   "Prompt string to send to ipython shell. "
@@ -137,14 +138,20 @@ This allows editing with interpreting on-the-fly! "
     (python-shell-send-string
      (concat "%debug " expr))))
 
-(defun my-python-doc-buffer ()
+(defun my-python-help-buffer ()
   "NOT COMPLETED - show ipython help document of python-object in temporary buffer. "
   (interactive)
   (let ((expr (my-python-object-at-point)))
-    (with-output-to-temp-buffer "*ipython-documentation*"
-      (princ
-       (python-shell-send-string-no-output
-	(format "help(%s)" expr))))))
+    (when (> (length expr) 0)		; Guard empty string
+      (with-output-to-temp-buffer "*python-documentation*"
+	(princ
+	 (python-shell-send-string-no-output
+	  (format "
+try:
+    help(%s)
+except: 
+    print('No doc available.')
+" expr)))))))
 
 (defun my-ipython-set-current-directory ()
   "Set ipython-shell's working directory to currently edited file's directory
@@ -185,7 +192,7 @@ the working directory. "
 		"C-c l"		my-python-send-line
 		"C-M-j"		my-python-send-line-and-newline
 		"C-x M-p"	my-python-open-shell-other-window
-		"C-c <tab>"	my-python-doc-buffer 
+		"C-c <tab>"	my-python-help-buffer 
 		"C-c !"		my-python-run-file-in-os
 		;; Following are based on ipython magic commands.
 		;; "C-c C-l"	my-ipython-send-current-file
