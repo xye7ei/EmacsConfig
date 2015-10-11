@@ -185,7 +185,7 @@ the working directory. "
 
 (defun my-python-run-file-in-os ()
   (interactive)
-  (shell-command (format "python %s &" (buffer-file-name))))
+  (async-shell-command (format "python %s &" (buffer-file-name))))
 
 (defun python-define-my-keys ()
   (let ((pkms '(;; "C-c"		nil 
