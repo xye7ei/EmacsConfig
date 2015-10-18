@@ -4,7 +4,7 @@
 ;; python-util-goto-line
 ;; python-util-forward-comment
 
-(defun my-python-open-shell-other-window ()
+(defun my-python-switch-to-shell-other-window ()
   "Switch other window to python shell buffer. "
   (interactive)
   (switch-to-buffer-other-window "*Python*")
@@ -199,7 +199,8 @@ the working directory. "
 		"C-c l"		my-python-send-line
 		"C-M-j"		my-python-send-line-and-newline
 		"C-c C-a"	my-python-send-all-above
-		"C-x M-p"	my-python-open-shell-other-window
+		"C-c z"		my-python-switch-to-shell-other-window
+		"C-c M-z"	my-python-switch-to-shell-other-window
 		"C-c <tab>"	my-python-help-buffer 
 		"C-c !"		my-python-run-file-in-os
 		;; Following are based on ipython magic commands.
