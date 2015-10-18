@@ -5,6 +5,13 @@
   (kill-buffer)
   (other-window -1))
 
+(defun recenter-top-bottom-other-window ()
+  (interactive)
+  (save-excursion
+    (other-window 1)
+    (recenter-top-bottom)
+    (other-window -1)))
+
 (defun move-forward-paren (&optional arg)
   "Move to the first half-paren afterward, then jump over it."
   (interactive "P")
@@ -205,6 +212,11 @@
 (global-set-key (kbd "C-M-{") '(lambda (arg)
 				 (interactive "P")
 				 (insert-pair arg ?\{ ?\})))
+(global-set-key (kbd "C-M-'") '(lambda (arg)
+				 (interactive "P")
+				 (insert-pair arg ?\' ?\')))
 (global-set-key (kbd "C-M-\"") '(lambda (arg)
 				 (interactive "P")
 				 (insert-pair arg ?\" ?\")))
+
+(global-set-key (kbd "C-S-l") 'recenter-top-bottom-other-window)
