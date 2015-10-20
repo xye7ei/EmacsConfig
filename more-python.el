@@ -173,7 +173,8 @@ the working directory. "
   (interactive)
   (save-buffer)
   (my-ipython-set-current-directory)
-  (python-shell-send-file (buffer-file-name)))
+  ;; (python-shell-send-file (buffer-file-name))
+  (python-shell-send-string (concat "%run " (buffer-file-name))))
 
 (defun my-ipython-dired ()
   "Show ipython-shell's working directory. "
