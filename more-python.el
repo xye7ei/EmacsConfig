@@ -62,6 +62,12 @@
   (save-excursion
     (python-shell-send-string (my-stripped-line))))
 
+(defun my-python-send-object ()
+  "Send python expression at point to python shell. "
+  (interactive)
+  (let ((expr (my-python-object-at-point)))
+    (python-shell-send-string expr)))
+
 (defun my-python-send-expression ()
   "Send python expression at point to python shell. "
   (interactive)
@@ -195,7 +201,7 @@ the working directory. "
 		;; "C-c C-f"   	python-shell-send-file
 		;; "C-c C-s"   	python-shell-send-string
 		;; "C-c C-r"   	python-shell-send-region
-		"C-x e"		my-python-send-expression
+		"C-c e"		my-python-send-object
 		"C-c M-h"	my-python-send-paragraph
 		"C-c l"		my-python-send-line
 		"C-M-j"		my-python-send-line-and-newline
