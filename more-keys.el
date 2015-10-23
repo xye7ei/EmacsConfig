@@ -151,7 +151,7 @@
 (global-set-key (kbd "C-S-SPC")		'mark-till-here)
 
 (global-set-key (kbd "C-x 4 k")		'kill-other-buffer)
-(global-set-key (kbd "C-x O")		'(lambda ()
+(global-set-key (kbd "C-x p")		'(lambda ()
 					   (interactive)
 					   (other-window -1)))
 (global-set-key (kbd "C-x g")		'switch-to-repl)
