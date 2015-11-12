@@ -113,10 +113,10 @@ This allows editing with interpreting on-the-fly! "
    "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
    ))
 
-;; (defun ipython-autoreload ()
-;;   (interactive)
-;;   (python-shell-send-string "%load_ext autoreload")
-;;   (python-shell-send-string "%autoreload 0"))
+(defun my-ipython-autoreload ()
+  (interactive)
+  (python-shell-send-string "%load_ext autoreload")
+  (python-shell-send-string "autoreload 2"))
 
 (defun my-ipython-ask-input ()
   "Prompt string to send to ipython shell. "
@@ -212,6 +212,7 @@ the working directory. "
 		"C-c !"		my-python-run-file-in-os
 		;; Following are based on ipython magic commands.
 		;; "C-c C-l"	my-ipython-send-current-file
+		"C-c C-u"	my-ipython-autoreload
 		"C-c C-k"	my-ipython-send-current-file
 		"C-c C-h"	my-ipython-help
 		;; "C-c q"		(lambda () (interactive) (python-shell-send-string "q"))
