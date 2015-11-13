@@ -74,6 +74,29 @@
   (let ((expr (my-python-expression-at-point)))
     (python-shell-send-string expr)))
 
+(defun my-python-eval-print-expression-at-point ()
+  "Eval expression at point and insert the result
+as documented string into next new line. "
+  (interactive)
+  (defun put-result-line (x)
+    (insert (format "# %s\n" x)))
+  (let* ((expr (my-python-expression-at-point))
+	 (rslt (python-shell-send-string-no-output expr))
+	 (rlns (split-string rslt "\n" t)))
+    (end-of-line)
+    (newline)
+    (if (< (length rlns) 30)
+	(while rlns
+	  (put-result-line (pop rlns)))
+      (progn
+	(dotimes (i 20)
+	  (put-result-line (pop rlns)))
+	(insert "# ...\n")
+	(while (> (length rlns) 10)
+	  (pop rlns))
+	(while rlns
+	  (put-result-line (pop rlns)))))))
+
 (defun my-python-send-line-and-newline ()
   "Send python line at point to python shell.
 This allows editing with interpreting on-the-fly! "
@@ -97,26 +120,27 @@ This allows editing with interpreting on-the-fly! "
     (python-shell-send-string
      (buffer-substring-no-properties 1 (line-end-position)))))
 
-(defun my-use-ipython ()
-  "Assign ipython's working setups according to ipython official website. "
-  (setq
-   python-shell-interpreter "ipython"
-   python-shell-interpreter-args ""; "-i C:/Tools/Python34/Scripts/ipython-script.py console --matplotlib"
-   python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-   python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
-   ;; Supporting auto-completion in emacs even when PyReadline not available in windows. 
-   python-shell-completion-setup-code
-   "from IPython.core.completerlib import module_completion"
-   python-shell-completion-string-code
-   "';'.join(module_completion('''%s'''))\n"
-   python-shell-completion-string-code
-   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
-   ))
-
 (defun my-ipython-autoreload ()
   (interactive)
   (python-shell-send-string "%load_ext autoreload")
   (python-shell-send-string "autoreload 2"))
+
+(defun my-use-ipython ()
+  "Assign ipython's working setups according to ipython official website. "
+  (when (executable-find "ipython")
+    (setq
+     python-shell-interpreter "ipython"
+     python-shell-interpreter-args ""; "-i C:/Tools/Python35/Scripts/ipython-script.py console --matplotlib"
+     python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+     python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+     ;; Supporting auto-completion in emacs even when PyReadline not available in windows. 
+     python-shell-completion-setup-code
+     "from IPython.core.completerlib import module_completion"
+     python-shell-completion-string-code
+     "';'.join(module_completion('''%s'''))\n"
+     python-shell-completion-string-code
+     "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
+     )))
 
 (defun my-ipython-ask-input ()
   "Prompt string to send to ipython shell. "
@@ -130,7 +154,7 @@ This allows editing with interpreting on-the-fly! "
   (python-shell-send-string
    (concat (my-python-object-at-point) "?"))) 
 
-(defun my-ipython-pdb ()
+(defun my-python-pdb ()
   "Call pdb mode for current python file for debugging. "
   (interactive)
   (let ((cmd (format "python -m pdb %s"
@@ -192,7 +216,7 @@ the working directory. "
 
 (defun my-python-run-file-in-os ()
   (interactive)
-  (async-shell-command (format "python %s &" (buffer-file-name))))
+  (async-shell-command (format "python %s" (buffer-file-name))))
 
 (defun python-define-my-keys ()
   (let ((pkms '(;; "C-c"		nil 
@@ -204,21 +228,22 @@ the working directory. "
 		"C-c e"		my-python-send-object
 		"C-c M-h"	my-python-send-paragraph
 		"C-c l"		my-python-send-line
-		"C-M-j"		my-python-send-line-and-newline
+		"C-j"		my-python-send-line-and-newline
+		"M-/"		my-python-eval-print-expression-at-point
 		"C-c C-a"	my-python-send-all-above
 		"C-c z"		my-python-switch-to-shell-other-window
 		"C-c M-z"	my-python-switch-to-shell-other-window
 		"C-c <tab>"	my-python-help-buffer 
 		"C-c !"		my-python-run-file-in-os
+		"C-c C-p"	my-python-pdb
 		;; Following are based on ipython magic commands.
 		;; "C-c C-l"	my-ipython-send-current-file
-		"C-c C-u"	my-ipython-autoreload
+		"C-c M-a"	my-ipython-autoreload
 		"C-c C-k"	my-ipython-send-current-file
 		"C-c C-h"	my-ipython-help
 		;; "C-c q"		(lambda () (interactive) (python-shell-send-string "q"))
 		;; "C-c <RET>"	(lambda () (interactive) (python-shell-send-string "\n"))
 		"C-c C-t"	my-ipython-timeit-expression
-		"C-c C-p"	my-ipython-pdb
 		"C-c C-d"	my-ipython-debug-expression
 		"C-c <escape>"	python-shell-switch-to-shell)))
     (while pkms
@@ -226,10 +251,7 @@ the working directory. "
 	     (m (pop pkms))) 
 	(define-key python-mode-map (kbd k) m)))))
 
-(when (executable-find "ipython")
-  (my-use-ipython))
-
+(add-hook 'python-mode-hook 'my-use-ipython) 
 (add-hook 'python-mode-hook 'python-define-my-keys)
-;; (add-hook 'inferior-python-mode-hook #'python-define-my-keys)
 
 (global-set-key (kbd "<apps> <apps> p") 'run-python)
