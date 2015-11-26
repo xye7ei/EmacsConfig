@@ -1,8 +1,12 @@
 (require 'python)
 
+;; Using the pre-defined functions within module `python.el'
 ;; python-util-strip-string
 ;; python-util-goto-line
 ;; python-util-forward-comment
+
+(defvar --my-python-help-buffer-name- "*python-help-documentation*")
+(defvar --my-python-output-buffer-name- "*python-output*")
 
 (defun my-python-switch-to-shell-other-window ()
   "Switch other window to python shell buffer. "
@@ -10,7 +14,7 @@
   (switch-to-buffer-other-window "*Python*")
   (other-window -1))
 
-(defun my-python-object-at-point ()
+(defun --my-python-object-at-point ()
   "Fetch the python object at editing point.
 
 *. Examples (with bar symbol emulating the caret):
@@ -33,20 +37,37 @@
 			(point)))))
       rslt)))
 
-(defun my-python-expression-at-point ()
-  "Fetch the python expression at editing point, i.e.
-1. Right hand side of some assignment statement;
-2. If not at assignment statement, then the whole line. "
-  (save-excursion
-    (progn
-      (while (not (looking-back "[=\n#]")) (backward-char))
-      (when (looking-at "\s")
-	(forward-char 1))
-      (buffer-substring-no-properties
-       (point)
-       (line-end-position)))))
+(defun --my-python-rvalue-in-statement (evalstr)
+  "Extract the RHS-value of evalstr if it is a statement.
+Trick: non-quoted equal sign cannot appear in LHS of a statement. 
+So match LHS with repeated Non-quote/Non-'='-symbol (such symbol
+sequence should be a legal identifier, ensuring found '=' sign
+is not nested in quotion) and a following '=' symbol. "
+  (python-util-strip-string (replace-regexp-in-string "^[^\\'\\\"=]+ *=" "" evalstr)))
 
-(defun my-stripped-line ()
+(defun --my-python-syntax-object-at-point ()
+  "Find a executable statement at point. Jump out of string/paren at first
+if position is nested in string/paren. "
+  (save-excursion
+    (let* ((ctp (python-syntax-context-type))
+	   (pos (if ctp
+		    (python-syntax-context ctp)
+		  (point))))
+      (goto-char pos)
+      (python-nav-backward-statement)
+      (python-nav-forward-statement)
+      (let* ((beg (point))
+	     (end (progn (python-nav-forward-statement)
+			 (- (point) 1)))
+	     (obj (buffer-substring-no-properties beg end)))
+	obj))))
+
+(defun --my-python-expression-at-point ()
+  (save-excursion
+    (let ((obj (--my-python-syntax-object-at-point)))
+      (--my-python-rvalue-in-statement obj))))
+
+(defun --my-stripped-line ()
   "Current edited line with white spaces from both sides stripped. "
   (save-excursion
     (buffer-substring-no-properties
@@ -60,42 +81,67 @@
   "Send current line to python shell. "
   (interactive)
   (save-excursion
-    (python-shell-send-string (my-stripped-line))))
+    (python-shell-send-string (--my-stripped-line))))
 
 (defun my-python-send-object ()
   "Send python expression at point to python shell. "
   (interactive)
-  (let ((expr (my-python-object-at-point)))
+  (let ((expr (--my-python-object-at-point)))
     (python-shell-send-string expr)))
 
 (defun my-python-send-expression ()
   "Send python expression at point to python shell. "
   (interactive)
-  (let ((expr (my-python-expression-at-point)))
+  (let ((expr (--my-python-expression-at-point)))
     (python-shell-send-string expr)))
+
+(defun my-python-eval-expression-at-point-output-buffer ()
+  "Eval expression at point and show the result in buffer. "
+  (interactive)
+  (save-excursion
+    (let* ((expr (python-util-strip-string (--my-python-expression-at-point)))
+	   (rslt (python-shell-send-string-no-output expr)))
+      (let ((src (current-buffer))
+	    (tar (get-buffer-create --my-python-output-buffer-name-)))
+	(switch-to-buffer-other-window tar)
+	(insert (format "eval(\"%s\") \n  ->\n%s" expr rslt))))))
+
+(defun --my-python-insert-commented-line-at-point (x)
+  (insert (format "# %s\n" x)))
 
 (defun my-python-eval-print-expression-at-point ()
   "Eval expression at point and insert the result
 as documented string into next new line. "
   (interactive)
-  (defun put-result-line (x)
-    (insert (format "# %s\n" x)))
-  (let* ((expr (my-python-expression-at-point))
+  (let* ((expr (--my-python-expression-at-point))
 	 (rslt (python-shell-send-string-no-output expr))
 	 (rlns (split-string rslt "\n" t)))
     (end-of-line)
     (newline)
-    (if (< (length rlns) 30)
+    (if (< (length rlns) 50)
 	(while rlns
-	  (put-result-line (pop rlns)))
+	  (--my-python-insert-commented-line-at-point (pop rlns)))
       (progn
-	(dotimes (i 20)
-	  (put-result-line (pop rlns)))
+	(dotimes (i 30)
+	  (--my-python-insert-commented-line-at-point (pop rlns)))
 	(insert "# ...\n")
-	(while (> (length rlns) 10)
+	(while (> (length rlns) 20)
 	  (pop rlns))
 	(while rlns
-	  (put-result-line (pop rlns)))))))
+	  (--my-python-insert-commented-line-at-point (pop rlns)))))))
+
+(defun my-python-eval-message-expression-at-point ()
+  "Show evaluation result. If `popup' is installed then use it
+to hint, otherwise use built-in `message' method. "
+  (interactive)
+  (let* ((expr (--my-python-expression-at-point))
+	 (rslt (python-shell-send-string-no-output expr)))
+    (if (package-installed-p 'popup)
+	(progn
+	  (when (not (fboundp 'popup-tip))
+	    (require 'popup))
+	  (popup-tip rslt))
+      (message rslt))))
 
 (defun my-python-send-line-and-newline ()
   "Send python line at point to python shell.
@@ -120,39 +166,6 @@ This allows editing with interpreting on-the-fly! "
     (python-shell-send-string
      (buffer-substring-no-properties 1 (line-end-position)))))
 
-(defun my-ipython-autoreload ()
-  (interactive)
-  (python-shell-send-string "%load_ext autoreload")
-  (python-shell-send-string "autoreload 2"))
-
-(defun my-use-ipython ()
-  "Assign ipython's working setups according to ipython official website. "
-  (when (executable-find "ipython")
-    (setq
-     python-shell-interpreter "ipython"
-     python-shell-interpreter-args ""; "-i C:/Tools/Python35/Scripts/ipython-script.py console --matplotlib"
-     python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-     python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
-     ;; Supporting auto-completion in emacs even when PyReadline not available in windows. 
-     python-shell-completion-setup-code
-     "from IPython.core.completerlib import module_completion"
-     python-shell-completion-string-code
-     "';'.join(module_completion('''%s'''))\n"
-     python-shell-completion-string-code
-     "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
-     )))
-
-(defun my-ipython-ask-input ()
-  "Prompt string to send to ipython shell. "
-  (interactive)
-  (let* ((inp (read-from-minibuffer "[In]:")))
-    (python-shell-send-string inp)))
-
-(defun my-ipython-help ()
-  "Send object-at-point appended with '?' to print help document in ipython shell. "
-  (interactive)
-  (python-shell-send-string
-   (concat (my-python-object-at-point) "?"))) 
 
 (defun my-python-pdb ()
   "Call pdb mode for current python file for debugging. "
@@ -161,38 +174,58 @@ This allows editing with interpreting on-the-fly! "
 		     (buffer-file-name))))
     (pdb cmd)))
 
-(defun my-ipython-timeit-expression ()
-  "%timeit the python expression at point. "
-  (interactive)
-  (let ((expr (my-python-expression-at-point)))
-    (python-shell-send-string
-     (concat "%timeit " expr))))
-
-(defun my-ipython-debug-expression ()
-  "%debug the python expression at point. "
-  (interactive)
-  (let ((expr (my-python-expression-at-point)))
-    (python-shell-send-string
-     (concat "%debug " expr))))
-
 (defun my-python-help-buffer ()
   "NOT COMPLETED - show ipython help document of python-object in temporary buffer. "
   (interactive)
-  (let ((expr (my-python-object-at-point)))
+  (let ((expr (--my-python-object-at-point)))
     (when (> (length expr) 0)		; Guard empty string
-      (with-output-to-temp-buffer "*python-documentation*"
+      (with-output-to-temp-buffer --my-python-help-buffer-name-
 	(princ
 	 (python-shell-send-string-no-output
 	  (format "
 try:
     help(%s)
 except: 
-    print('No doc available.')
-" expr)))))))
+    print('No help information available.')
+"
+		  expr)))))))
+
+(defun my-python-run-file-in-os ()
+  (interactive)
+  (async-shell-command (format "python %s" (buffer-file-name))))
+
+
+
+;; The following functions are based upon IPython's magical functionalities. 
+;; They're not available when using naive CPython interpreter. 
+(defun my-ipython-autoreload ()
+  (interactive)
+  (python-shell-send-string "%load_ext autoreload")
+  (python-shell-send-string "autoreload 2"))
+
+(defun my-ipython-ask-input ()
+  "Prompt string to send to ipython shell. "
+  (interactive)
+  (let* ((inp (read-from-minibuffer "[In]:")))
+    (python-shell-send-string inp)))
+
+(defun my-ipython-timeit-expression ()
+  "%timeit the python expression at point. "
+  (interactive)
+  (let ((expr (--my-python-expression-at-point)))
+    (python-shell-send-string
+     (concat "%timeit " expr))))
+
+(defun my-ipython-debug-expression ()
+  "%debug the python expression at point. "
+  (interactive)
+  (let ((expr (--my-python-expression-at-point)))
+    (python-shell-send-string
+     (concat "%debug " expr))))
 
 (defun my-ipython-set-current-directory ()
-  "Set ipython-shell's working directory to currently edited file's directory
-so that 'import' can work correctly. "
+  "Set ipython-shell's working directory to the currently edited
+file's directory so that 'import' can work correctly. "
   (interactive)
   (python-shell-send-string-no-output
    (format "cd %s" (file-name-directory (buffer-file-name)))))
@@ -214,10 +247,29 @@ the working directory. "
      (format "\"%s %s\""
 	     (file-name-directory bf) bf))))
 
-(defun my-python-run-file-in-os ()
-  (interactive)
-  (async-shell-command (format "python %s" (buffer-file-name))))
 
+;; Use IPython as the default intepreter when accessing python mode. 
+(defun my-use-ipython ()
+  "Assign ipython's working setups according to ipython official website. "
+  (when (executable-find "ipython")
+    (setq
+     python-shell-interpreter "ipython"
+     python-shell-interpreter-args ""; "-i C:/Tools/Python35/Scripts/ipython-script.py console --matplotlib"
+     python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+     python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+     ;; Supporting auto-completion in emacs even when PyReadline not available in windows. 
+     python-shell-completion-setup-code
+     "from IPython.core.completerlib import module_completion"
+     python-shell-completion-string-code
+     "';'.join(module_completion('''%s'''))\n"
+     python-shell-completion-string-code
+     "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
+     )))
+
+
+;; Define my extended custom keys.
+;; Mind some of them are only dependent upon naive CPython, but some are
+;; dependent upon IPython,
 (defun python-define-my-keys ()
   (let ((pkms '(;; "C-c"		nil 
 		;; Some are already covered in `python.el'
@@ -228,8 +280,10 @@ the working directory. "
 		"C-c e"		my-python-send-object
 		"C-c M-h"	my-python-send-paragraph
 		"C-c l"		my-python-send-line
-		"C-j"		my-python-send-line-and-newline
-		"M-/"		my-python-eval-print-expression-at-point
+		"C-M-j"		my-python-send-line-and-newline
+		"C-M-,"		my-python-eval-print-expression-at-point
+		"C-M-."		my-python-eval-message-expression-at-point
+		"C-M-;"		my-python-eval-expression-at-point-output-buffer
 		"C-c C-a"	my-python-send-all-above
 		"C-c z"		my-python-switch-to-shell-other-window
 		"C-c M-z"	my-python-switch-to-shell-other-window
@@ -240,7 +294,6 @@ the working directory. "
 		;; "C-c C-l"	my-ipython-send-current-file
 		"C-c M-a"	my-ipython-autoreload
 		"C-c C-k"	my-ipython-send-current-file
-		"C-c C-h"	my-ipython-help
 		;; "C-c q"		(lambda () (interactive) (python-shell-send-string "q"))
 		;; "C-c <RET>"	(lambda () (interactive) (python-shell-send-string "\n"))
 		"C-c C-t"	my-ipython-timeit-expression

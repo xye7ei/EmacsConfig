@@ -67,11 +67,12 @@
 (defun my-TeX-to-onerive ()
   (interactive)
   (copy-file (buffer-file-name)
-	     (format "~/OneDrive/Active/%s" (buffer-name))
+	     (format "C:/Users/Shellay/OneDrive/Active/%s" (buffer-name))
 	     1))
 
 (defun my-TeX-config () 
   (my-expand-TeX-fold-env)
+  (setq-default TeX-master nil)
   (define-key TeX-mode-map (kbd "C-c C-a") 'my-TeX-to-onerive))
 
 ;;; Hook my configs to fold-mode...
