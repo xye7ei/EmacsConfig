@@ -1,4 +1,4 @@
-;;; online-langtool.el --- Online grammar checker for natural languages. 
+;;; online-langtool.el --- Online grammar checker for natural languages.
 
 ;; Version 0.1 ; 11/26/2015
 ;; Copyright (C) 2015-2025, Xuelei Li
@@ -35,7 +35,7 @@
 ;; Code:
 
 
-;; Variables on module level. 
+;; Variables on module level.
 
 (defvar --lang-req-pat
   "https://languagetool.org:8081/?language=%s&text=%s"
@@ -51,7 +51,7 @@
 
 (defvar --online-langtool-language-list
   '("en-US" "de-DE" "cn-CN")
-  "A list of usual languages environment available for checking.") 
+  "A list of usual languages environment available for checking.")
 
 
 ;; Private utility functions.
@@ -73,8 +73,8 @@ Returns a string as parsed xml as a list. "
       (xml-parse-region (point) (point-max)))))
 
 (defun --online-langtool-check-errors (str)
-  "Return a list of error information objects as
-a list of lists. "
+  "Return a list of error information objects as a list of
+lists. "
   (let* ((x (--online-langtool-request str))
 	 (ms (assoc 'matches x)))
     (if ms
@@ -86,13 +86,12 @@ a list of lists. "
       (error "Failed request."))))
 
 (defun --online-langtool-gen-overlays (str beg end)
-  "Generate overlays for each lexical/syntax error and
-cache them into `--online-langtool-active-overlays' for
-further looping."
+  "Generate overlays for each lexical/syntax error and cache them
+into `--online-langtool-active-overlays' for further looping."
   (save-excursion
     (let* ((errs (--online-langtool-check-errors str)))
       (dolist (e errs --online-langtool-active-overlays)
-	;; Use `offset' other than `fromx', `tox' to refer positions. 
+	;; Use `offset' other than `fromx', `tox' to refer positions.
 	(let* ((obeg (+ beg (string-to-int (cdr (assoc 'offset e)))))
 	       (oend (+ obeg (string-to-int (cdr (assoc 'errorlength e)))))
 	       (o (make-overlay obeg oend))
@@ -109,14 +108,20 @@ further looping."
 	  (overlay-put o 'replacements rplst)
 	  (push o --online-langtool-active-overlays))))))
 
+(defvar --online-langtool-popup-menu-keymap 
+  ;; FIXME: How to define the key with decent manner?
+  (let ((map (make-sparse-keymap)))
+    (define-key map "<ESC>" 'popup-close)
+    (define-key map "<ENTER>" 'popup-select)
+    (define-key map "<SPC>" 'popup-select)
+    (define-key map "\C-n" 'popup-next)
+    (define-key map [down] 'popup-next)
+    (define-key map "\C-p" 'popup-previous)
+    (define-key map [up] 'popup-previous)
+    map)
+  "Keymap for using `popup-menu*' to correct words.")
 
 ;; Final interactive functions for external use.
-
-(defun online-langtool-check-region (begin end)
-  "Perform grammar check for marked region."
-  (interactive "r")
-  (let* ((str (buffer-substring-no-properties begin end)))
-    (--online-langtool-gen-overlays str begin end)))
 
 (defun online-langtool-clear-all ()
   "Clear all current error information."
@@ -124,6 +129,14 @@ further looping."
   (while --online-langtool-active-overlays
     (pop --online-langtool-active-overlays))
   (remove-overlays))
+
+(defun online-langtool-check-region (begin end)
+  "Perform grammar check for marked region. Clear all results
+before."
+  (interactive "r")
+  (online-langtool-clear-all)
+  (let* ((str (buffer-substring-no-properties begin end)))
+    (--online-langtool-gen-overlays str begin end)))
 
 (defun online-langtool-loop-overlays ()
   "Loop through the overlays and get hints for correction."
@@ -136,35 +149,48 @@ further looping."
 	     (rps (overlay-get o0 'replacements))
 	     (beg (overlay-start o0))
 	     (end (overlay-end o0)))
-	(goto-char beg) 
+	(goto-char beg)
 	;; Delete overlay object since it is to be checked only once.
 	(remove-overlays beg end)
-	(if (fboundp 'popup-tip) 
-	    (let ((sel (popup-menu* rps
-				    :prompt msg
-				    :isearch t
-				    :initial-index 0)))
-	      ;; Delete wrong word.
-	      (delete-region beg end)
-	      ;; Insert selected word at current position.
-	      (insert sel))
+	(if (fboundp 'popup-menu*)
+	    (if (and rps
+		     (> (length (car rps)) 0))
+		(let ((sel (popup-menu* rps
+					:prompt msg
+					;; :isearch t :keymap
+					;; --online-langtool-popup-menu-keymap
+					:initial-index 0)))
+		  (when (and (stringp sel)
+			     (> (length sel) 0))
+		    ;; Delete wrong word.
+		    (delete-region beg end)
+		    ;; Insert selected word at current position.
+		    (insert sel)))
+	      ;; Not using `popup-tip', thus keeping style
+	      ;; consistent with `popup-menu'.
+	      (message msg))
+	  ;; If `popup' not available, use naive `message' instead.
 	  (message ht)))
-    (message
-     "No error information available. Recheck or give up. ")))
+    (message "No active grammar error. Recheck or give up. ")))
 
 
-;; Package minor mode declaration. 
+;; Package minor mode declaration.
+
+(defvar online-langtool-keymap
+  (let ((mp (make-sparse-keymap)))
+    (define-key mp (kbd "C-c M-h") 'online-langtool-check-region)
+    (define-key mp (kbd "C-c M-c") 'online-langtool-clear-all)
+    (define-key mp (kbd "C-c M-n") 'online-langtool-loop-overlays)
+    mp)
+  "Keymap for using checking functionalities.")
 
 (define-minor-mode online-langtool-mode
   "Use real-time online grammar checking for natural languages powered
 by `www.langtool.org'. "
   :lighter " LangTool"
-  :keymap (let ((mp (make-sparse-keymap)))
-	    (define-key mp (kbd "C-c M-h") 'online-langtool-check-region)
-	    (define-key mp (kbd "C-c M-c") 'online-langtool-clear-all)
-	    (define-key mp (kbd "C-c M-n") 'online-langtool-loop-overlays)
-	    mp))
+  :keymap online-langtool-keymap)
+
 
 (provide 'online-langtool-mode)
 
-;;; `online-langtool-mode' ends here.
+;;; `online-langtool.el' ends here.
