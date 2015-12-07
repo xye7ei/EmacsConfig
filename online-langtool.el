@@ -54,11 +54,14 @@
   "A list of usual languages environment available for checking.")
 
 
-;; Private utility functions.
+;; Face for hinting words/sentences with errors.
 
 (defface online-langtool-error-face
   '((t (:foreground "black" :background "pink")))
   "Face for errored words.")
+
+
+;; Private utility functions.
 
 (defun --online-langtool-request (str)
   "Request for checking with given argument `str'.
@@ -121,24 +124,36 @@ into `--online-langtool-active-overlays' for further looping."
     map)
   "Keymap for using `popup-menu*' to correct words.")
 
+
 ;; Final interactive functions for external use.
 
-(defun online-langtool-clear-all ()
-  "Clear all current error information."
+(defun -online-langtool-set-language (arg)
+  "Prompt user to choose a default language for grammar
+checking."
+  (interactive
+   (list (completing-read
+	  "Choose language: "
+	  --online-langtool-language-list)))
+  (when (member arg --online-langtool-language-list)
+    (setq --online-langtool-default-language arg)))
+
+(defun -online-langtool-clear-all ()
+  "Clear all current error information by both destructing the
+overlays and clear the stack of overlays."
   (interactive)
   (while --online-langtool-active-overlays
     (pop --online-langtool-active-overlays))
   (remove-overlays))
 
-(defun online-langtool-check-region (begin end)
+(defun -online-langtool-check-region (begin end)
   "Perform grammar check for marked region. Clear all results
 before."
   (interactive "r")
-  (online-langtool-clear-all)
+  (-online-langtool-clear-all)
   (let* ((str (buffer-substring-no-properties begin end)))
     (--online-langtool-gen-overlays str begin end)))
 
-(defun online-langtool-loop-overlays ()
+(defun -online-langtool-loop-overlays ()
   "Loop through the overlays and get hints for correction."
   (interactive)
   (require 'popup nil t)
@@ -178,9 +193,10 @@ before."
 
 (defvar online-langtool-keymap
   (let ((mp (make-sparse-keymap)))
-    (define-key mp (kbd "C-c M-h") 'online-langtool-check-region)
-    (define-key mp (kbd "C-c M-c") 'online-langtool-clear-all)
-    (define-key mp (kbd "C-c M-n") 'online-langtool-loop-overlays)
+    (define-key mp (kbd "C-c M-h") '-online-langtool-check-region)
+    (define-key mp (kbd "C-c M-c") '-online-langtool-clear-all)
+    (define-key mp (kbd "C-c M-n") '-online-langtool-loop-overlays)
+    (define-key mp (kbd "C-c M-l") '-online-langtool-set-language)
     mp)
   "Keymap for using checking functionalities.")
 
