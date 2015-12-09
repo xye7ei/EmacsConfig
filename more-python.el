@@ -254,17 +254,18 @@ the working directory. "
   (when (executable-find "ipython")
     (setq
      python-shell-interpreter "ipython"
-     python-shell-interpreter-args ""; "-i C:/Tools/Python35/Scripts/ipython-script.py console --matplotlib"
+     python-shell-interpreter-args ""; "-i C:/Python35/Scripts/ipython-script.py console --matplotlib"
      python-shell-prompt-regexp "In \\[[0-9]+\\]: "
      python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
      ;; Supporting auto-completion in emacs even when PyReadline not available in windows. 
-     python-shell-completion-setup-code
-     "from IPython.core.completerlib import module_completion"
-     python-shell-completion-string-code
-     "';'.join(module_completion('''%s'''))\n"
-     python-shell-completion-string-code
-     "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
-     )))
+     ;; python-shell-completion-setup-code
+     ;; "from IPython.core.completerlib import module_completion"
+     ;; python-shell-completion-string-code
+     ;; "';'.join(module_completion('''%s'''))\n"
+     ;; python-shell-completion-string-code
+     ;; "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
+     ))
+  )
 
 
 ;; Define my extended custom keys.
