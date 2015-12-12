@@ -8,11 +8,23 @@
   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
   (package-initialize))
 
-;; Theme
-(custom-set-variables
- '(custom-enabled-themes (quote (leuven))))
-(custom-set-faces
- '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 90 :width normal)))))
+
+;; Dark Theme 
+(defun my-dark-theme ()
+  (interactive)
+  (custom-set-variables
+   '(custom-enabled-themes (quote (deeper-blue))))
+  (custom-set-faces
+   '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 90 :width normal))))))
+
+;; Light Theme 
+(defun my-light-theme ()
+  (interactive)
+  (custom-set-variables
+   '(custom-enabled-themes (quote (leuven))))
+  (custom-set-faces
+   '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 90 :width normal))))))
+
 
 ;; Backup settings.
 (setq
@@ -23,10 +35,12 @@
  kept-old-versions 2
  version-control t)
 
+
 ;; Preferences.
 (setq inhibit-splash-screen t)
 (set-language-environment "UTF-8")
 (put 'narrow-to-region 'disabled nil)
+
 
 ;; Useful minor-modes setups!
 (global-auto-revert-mode 1)
@@ -37,6 +51,7 @@
 (electric-pair-mode 1)
 (add-hook 'minibuffer-setup-hook '(lambda () (interactive) (electric-pair-mode 0)))
 (add-hook 'minibuffer-exit-hook '(lambda () (interactive) (electric-pair-mode 1)))
+
 
 
 ;; Auxiliary settings.
