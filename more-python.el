@@ -8,14 +8,8 @@
 (defvar --my-python-help-buffer-name- "*python-help-documentation*")
 (defvar --my-python-output-buffer-name- "*python-output*")
 
-(defun my-python-switch-to-shell-other-window ()
-  "Switch other window to python shell buffer. "
-  (interactive)
-  (switch-to-buffer-other-window "*Python*")
-  (other-window -1))
-
 (defun --my-python-object-at-point ()
-  "Fetch the python object at editing point.
+  "Fetch the python object at current point.
 
 *. Examples (with bar symbol emulating the caret):
 
@@ -39,11 +33,16 @@
 
 (defun --my-python-rvalue-in-statement (evalstr)
   "Extract the RHS-value of evalstr if it is a statement.
-Trick: non-quoted equal sign cannot appear in LHS of a statement. 
+Trick: non-quoted equal sign cannot appear in LHS of a statement.
 So match LHS with repeated Non-quote/Non-'='-symbol (such symbol
-sequence should be a legal identifier, ensuring found '=' sign
-is not nested in quotion) and a following '=' symbol. "
-  (python-util-strip-string (replace-regexp-in-string "^[^\\'\\\"=]+ *=" "" evalstr)))
+sequence should be a legal identifier, ensuring found '=' sign is
+not nested in quotion since literal string cannot be LHS) and a
+following '=' symbol. "
+  (python-util-strip-string
+   (replace-regexp-in-string
+    "^[^\\'\\\"=]+ *="
+    ""
+    evalstr)))
 
 (defun --my-python-syntax-object-at-point ()
   "Find a executable statement at point. Jump out of string/paren at first
@@ -83,10 +82,10 @@ if position is nested in string/paren. "
   (save-excursion
     (python-shell-send-string (--my-stripped-line))))
 
-(defun my-python-send-object ()
+(defun my-python-send-syntax-object-at-point ()
   "Send python expression at point to python shell. "
   (interactive)
-  (let ((expr (--my-python-object-at-point)))
+  (let ((expr (--my-python-syntax-object-at-point)))
     (python-shell-send-string expr)))
 
 (defun my-python-send-expression ()
@@ -145,13 +144,17 @@ to hint, otherwise use built-in `message' method. "
 
 (defun my-python-send-line-and-newline ()
   "Send python line at point to python shell.
-This allows editing with interpreting on-the-fly! "
+This allows editing with interpreting on-the-fly!
+
+FIXME: What if point is in the middle of multi-line statement? "
   (interactive)
   (my-python-send-line)
   (move-end-of-line 1)
   (newline))
 
 (defun my-python-send-paragraph ()
+  "FIXME: Should be replaced by `xxx-send-statement', which is
+more rigorous."
   (interactive)
   (backward-paragraph)
   (let ((a (point)))
@@ -175,7 +178,10 @@ This allows editing with interpreting on-the-fly! "
     (pdb cmd)))
 
 (defun my-python-help-buffer ()
-  "NOT COMPLETED - show ipython help document of python-object in temporary buffer. "
+  "NOT COMPLETED - show ipython help document of python-object in
+temporary buffer.
+
+FIXME: How to get the object-at-point?"
   (interactive)
   (let ((expr (--my-python-object-at-point)))
     (when (> (length expr) 0)		; Guard empty string
@@ -194,6 +200,9 @@ except:
   (interactive)
   (async-shell-command (format "python %s" (buffer-file-name))))
 
+(defun my-python-exec-file ()
+  (interactive)
+  (python-shell-send-file (buffer-file-name)))
 
 
 ;; The following functions are based upon IPython's magical functionalities. 
@@ -268,38 +277,35 @@ the working directory. "
   )
 
 
-;; Define my extended custom keys.
-;; Mind some of them are only dependent upon naive CPython, but some are
-;; dependent upon IPython,
 (defun python-define-my-keys ()
+  "Define my extended custom keys. Some of them are only
+dependent upon naive CPython, but some are dependent upon
+IPython, Some useful key-bnidings are already supplied by
+`python.el' and can be queried in function `python-mode'. They
+should have no conflicts with the key definitions below.
+"
+
   (let ((pkms '(;; "C-c"		nil 
-		;; Some are already covered in `python.el'
-		;; "C-c C-b"   	python-shell-send-buffer
-		;; "C-c C-f"   	python-shell-send-file
-		;; "C-c C-s"   	python-shell-send-string
-		;; "C-c C-r"   	python-shell-send-region
-		"C-c e"		my-python-send-object
-		"C-c M-h"	my-python-send-paragraph
+		"C-c e"		my-python-send-syntax-object-at-point
+		"C-c h"		my-python-send-paragraph
 		"C-c l"		my-python-send-line
-		"C-M-j"		my-python-send-line-and-newline
-		"C-M-,"		my-python-eval-print-expression-at-point
-		"C-M-."		my-python-eval-message-expression-at-point
-		"C-M-;"		my-python-eval-expression-at-point-output-buffer
-		"C-c C-a"	my-python-send-all-above
-		"C-c z"		my-python-switch-to-shell-other-window
-		"C-c M-z"	my-python-switch-to-shell-other-window
-		"C-c <tab>"	my-python-help-buffer 
-		"C-c !"		my-python-run-file-in-os
-		"C-c C-p"	my-python-pdb
-		;; Following are based on ipython magic commands.
-		;; "C-c C-l"	my-ipython-send-current-file
+		"C-c a"		my-python-send-all-above
+		"C-c j"		my-python-send-line-and-newline
+		"C-c ,"		my-python-eval-print-expression-at-point
+		"C-c ."		my-python-eval-message-expression-at-point
+		"C-c ;"		my-python-eval-expression-at-point-output-buffer
+		;; 
+		"C-c C-h"	my-python-help-buffer 
+		"C-c C-d"	my-python-pdb
+		"C-c C-o"	my-python-run-file-in-os
+		"C-c C-b"	my-python-exec-file
+		;; Following are based on ipython "M"agic commands. So
+		;; "M"eta key is used.
 		"C-c M-a"	my-ipython-autoreload
-		"C-c C-k"	my-ipython-send-current-file
-		;; "C-c q"		(lambda () (interactive) (python-shell-send-string "q"))
-		;; "C-c <RET>"	(lambda () (interactive) (python-shell-send-string "\n"))
-		"C-c C-t"	my-ipython-timeit-expression
-		"C-c C-d"	my-ipython-debug-expression
-		"C-c <escape>"	python-shell-switch-to-shell)))
+		"C-c M-k"	my-ipython-send-current-file
+		"C-c M-t"	my-ipython-timeit-expression
+		"C-c M-d"	my-ipython-debug-expression
+		)))
     (while pkms
       (let* ((k (pop pkms))
 	     (m (pop pkms))) 
