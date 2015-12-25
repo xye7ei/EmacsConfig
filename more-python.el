@@ -76,6 +76,7 @@ if position is nested in string/paren. "
      (progn (end-of-line)
 	    (point)))))
 
+
 (defun my-python-send-line ()
   "Send current line to python shell. "
   (interactive)
@@ -276,6 +277,11 @@ the working directory. "
      ))
   )
 
+(defun my-python-switch-to-shell-other-window ()
+  (interactive)
+  (save-excursion
+    (python-shell-switch-to-shell)
+    (other-window 1)))
 
 (defun python-define-my-keys ()
   "Define my extended custom keys. Some of them are only
@@ -295,6 +301,7 @@ should have no conflicts with the key definitions below.
 		"C-c ."		my-python-eval-message-expression-at-point
 		"C-c ;"		my-python-eval-expression-at-point-output-buffer
 		;; 
+		"C-c C-a"	my-python-switch-to-shell-other-window
 		"C-c C-h"	my-python-help-buffer 
 		"C-c C-d"	my-python-pdb
 		"C-c C-o"	my-python-run-file-in-os
