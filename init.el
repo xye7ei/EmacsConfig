@@ -70,3 +70,5 @@
 ;   (define-globalized-minor-mode global-pretty-lambda-mode
 ;     pretty-lambda-mode pretty-lambda-mode)
 ;   (global-pretty-lambda-mode))
+
+(setq-default c-basic-offset 4)
