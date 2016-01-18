@@ -40,7 +40,7 @@
 (setq inhibit-splash-screen t)
 (set-language-environment "UTF-8")
 (put 'narrow-to-region 'disabled nil)
-(setq scroll-margin 3)
+;; (setq scroll-margin 3)
 
 ;; Useful minor-modes setups!
 (global-auto-revert-mode 1)

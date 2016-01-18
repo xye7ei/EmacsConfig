@@ -304,7 +304,7 @@ should have no conflicts with the key definitions below.
 		"C-c C-a"	my-python-switch-to-shell-other-window
 		"C-c C-h"	my-python-help-buffer 
 		"C-c C-d"	my-python-pdb
-		"C-c C-o"	my-python-compile-file
+		"C-c C-k"	my-python-compile-file
 		"C-c C-b"	my-python-exec-file
 		;; Following are based on ipython "M"agic commands. So
 		;; "M"eta key is used.
@@ -320,5 +320,3 @@ should have no conflicts with the key definitions below.
 
 (add-hook 'python-mode-hook 'my-use-ipython) 
 (add-hook 'python-mode-hook 'python-define-my-keys)
-
-(global-set-key (kbd "<apps> <apps> p") 'run-python)
