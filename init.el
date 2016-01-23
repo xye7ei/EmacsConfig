@@ -37,14 +37,15 @@
 
 
 ;; Preferences.
-(setq inhibit-splash-screen t)
 (set-language-environment "UTF-8")
 (put 'narrow-to-region 'disabled nil)
+(setq inhibit-splash-screen t)
+(setq tab-width 4)
 ;; (setq scroll-margin 3)
 
 ;; Useful minor-modes setups!
 (global-auto-revert-mode 1)
-(linum-mode 1)
+(global-linum-mode 1)
 (show-paren-mode 1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
