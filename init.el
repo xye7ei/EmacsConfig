@@ -74,3 +74,5 @@
 ;   (global-pretty-lambda-mode))
 
 (setq-default c-basic-offset 4)
+
+(my-light-theme)

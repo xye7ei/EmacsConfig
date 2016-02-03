@@ -80,4 +80,6 @@
 (add-hook 'TeX-fold-mode-hook 'my-TeX-config)
 (add-hook 'latex-mode-hook 'TeX-fold-mode) 
 (add-hook 'TeX-mode-hook 'TeX-fold-mode)
-(add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
+(add-hook 'latex-mode-hook 'TeX-fold-mode)
+(add-hook 'latex-mode-hook 'TeX-source-correlate-mode)
+(setq TeX-source-correlate-start-server t)
