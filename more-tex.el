@@ -56,7 +56,9 @@
 (defun my-expand-TeX-fold-env ()
   (dolist (c '(("[figure]" ("figure"))
 	       ("[equation]" ("equation"))
+	       ("[enumerate]" ("enumerate"))
 	       ("[equation*]" ("equation*"))
+	       ("[itemize]" ("itemize"))
 	       ("[itemize...]" ("itemize"))
 	       ("[tabular]" ("tabular"))
 	       ("[align]" ("align"))
@@ -78,8 +80,8 @@
 ;;; Hook my configs to fold-mode...
 ;;; then hook fold-mode to TeX-mode.
 (add-hook 'TeX-fold-mode-hook 'my-TeX-config)
-(add-hook 'latex-mode-hook 'TeX-fold-mode) 
-(add-hook 'TeX-mode-hook 'TeX-fold-mode)
-(add-hook 'latex-mode-hook 'TeX-fold-mode)
-(add-hook 'latex-mode-hook 'TeX-source-correlate-mode)
+(add-hook 'TeX-mode-hook 'TeX-fold-mode) 
+(add-hook 'LaTeX-mode-hook 'TeX-fold-mode) 
+(add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+
 (setq TeX-source-correlate-start-server t)
