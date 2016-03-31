@@ -22,10 +22,10 @@
     (package-refresh-contents)
     (package-install 'haskell-mode))
   (require 'haskell) 
-  (add-hooks (list 'haskell-mode-hook)
-	     (list 'interactive-haskell-mode
-		   'turn-on-haskell-indentation)) 
+  (add-hook 'haskell-mode-hook interactive-haskell-mode)
+  ;; (add-hook 'haskell-mode-hook turn-on-haskell-indentation)
   (custom-set-variables
+   '(haskell-indent-spaces 4)
    '(haskell-process-suggest-remove-import-lines t)
    '(haskell-process-auto-import-loaded-modules t)
    '(haskell-process-log t)
