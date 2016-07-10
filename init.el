@@ -60,18 +60,18 @@
 (setq find-function-C-source-directory "C:/emacs/src/")
 ; (setq default-directory "C:/Users/Shellay/OneDrive/")
 
-; (when (package-installed-p 'evil)
-;   (evil-mode))
+;; (when (package-installed-p 'evil)
+;;   (evil-mode))
 
-; (when (package-installed-p 'rainbow-delimiters)
-;   (define-globalized-minor-mode global-rainbow-delimiters-mode
-;     rainbow-delimiters-mode rainbow-delimiters-mode)
-;   (global-rainbow-delimiters-mode 1))
+(when (fboundp 'rainbow-delimiters-mode)
+  (define-globalized-minor-mode global-rainbow-delimiters-mode
+    rainbow-delimiters-mode rainbow-delimiters-mode)
+  (global-rainbow-delimiters-mode 1))
 
-; (when (package-installed-p 'pretty-lambdada)
-;   (define-globalized-minor-mode global-pretty-lambda-mode
-;     pretty-lambda-mode pretty-lambda-mode)
-;   (global-pretty-lambda-mode))
+(when (fboundp 'pretty-lambdada-mode)
+  (define-globalized-minor-mode global-pretty-lambda-mode
+    pretty-lambda-mode pretty-lambda-mode)
+  (global-pretty-lambda-mode))
 
 (setq-default c-basic-offset 4)
 (setq-default outline-blank-line t)

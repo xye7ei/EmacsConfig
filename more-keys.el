@@ -43,27 +43,8 @@
     (set-mark-command ARG)
     (goto-char phere)))
 
-(global-set-key (kbd "C-S-SPC")		'mark-till-here)
 
-(global-set-key (kbd "C-x 4 k")		'kill-other-buffer)
-(global-set-key (kbd "C-x p")		'(lambda ()
-					   (interactive)
-					   (other-window -1)))
-(global-set-key (kbd "C-x \\")		'kill-helper-buffers)
-
-;; Enhancement for parenthesis
-
-(global-set-key (kbd "<apps> <apps>") 	nil)
-(global-set-key (kbd "<apps> l") 	'toggle-truncate-lines)
-(global-set-key (kbd "<apps> m") 	'toggle-menu-bar-mode-from-frame)
-
-(global-set-key (kbd "C-<up>") '(lambda () (interactive)
-				  (scroll-up 2)))
-(global-set-key (kbd "C-<down>") '(lambda () (interactive)
-				    (scroll-down 2)))
-
-
-;;; Representative level controls.
+;;; Display
 
 (defun change-face-size (ARG)
   (interactive "nInput face height: ")
@@ -80,32 +61,43 @@
   (interactive "nInput alpha value: ")
   (set-transparency ARG))
 
-(defun hs ()
-  (interactive)
-  (hs-minor-mode))
 
-(global-set-key (kbd "<apps> t") 	'change-transparency)
-(global-set-key (kbd "<apps> ,") 	'(lambda () (interactive)
-					   (set-transparency 20)))
-(global-set-key (kbd "<apps> .") 	'(lambda () (interactive)
-					   (set-transparency 90)))
-(global-set-key (kbd "<apps> f") 	'change-face-size)
-(global-set-key (kbd "C-=") 		'(lambda () (interactive)
-					   (increase-face-size 5)))
-(global-set-key (kbd "C--")		'(lambda () (interactive)
-					   (increase-face-size -5)))
+;;; 
 
-(global-set-key (kbd "C-M-[") '(lambda (arg)
-				 (interactive "P")
-				 (insert-pair arg ?\[ ?\])))
-(global-set-key (kbd "C-M-{") '(lambda (arg)
-				 (interactive "P")
-				 (insert-pair arg ?\{ ?\})))
-(global-set-key (kbd "C-M-'") '(lambda (arg)
-				 (interactive "P")
-				 (insert-pair arg ?\' ?\')))
-(global-set-key (kbd "C-M-\"") '(lambda (arg)
-				 (interactive "P")
-				 (insert-pair arg ?\" ?\")))
+(global-set-key (kbd "C-M-[") 'insert-pair)
+(global-set-key (kbd "C-M-{") 'insert-pair)
+(global-set-key (kbd "C-M-\"") 'insert-pair)
+(global-set-key (kbd "C-M-\'") 'insert-pair) 
+(global-set-key (kbd "C-M-]") 'delete-pair) 
 
+
+;;; 
+
+(global-set-key (kbd "<apps> <apps>") 	'nil)
+(global-set-key (kbd "<apps> l") 	'toggle-truncate-lines)
+(global-set-key (kbd "<apps> m") 	'toggle-menu-bar-mode-from-frame)
+(global-set-key (kbd "<apps> t")	'change-transparency)
+(global-set-key (kbd "<apps> ,")	'(lambda () (interactive) (set-transparency 20)))
+(global-set-key (kbd "<apps> .")	'(lambda () (interactive) (set-transparency 90)))
+(global-set-key (kbd "<apps> f")	'change-face-size)
+
+(global-set-key (kbd "C-S-SPC")		'mark-till-here) 
+(global-set-key (kbd "C-x 4 k")		'kill-other-buffer)
+(global-set-key (kbd "C-x p")		'(lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "C-x \\")		'kill-helper-buffers) 
+(global-set-key (kbd "C-=")		'(lambda () (interactive) (increase-face-size 5)))
+(global-set-key (kbd "C--")		'(lambda () (interactive) (increase-face-size -5)))
+(global-set-key (kbd "C-<up>")		'(lambda () (interactive) (scroll-down 2)))
+(global-set-key (kbd "C-<down>")	'(lambda () (interactive) (scroll-up 2))) 
 (global-set-key (kbd "C-S-l") 'recenter-top-bottom-other-window)
+
+
+
+;;; 
+
+(when (fboundp 'evil-mode)
+  (add-hook
+   'evil-mode-hook
+   '(lambda ()
+      (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+      (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up))))
