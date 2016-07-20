@@ -100,4 +100,10 @@
    'evil-mode-hook
    '(lambda ()
       (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-      (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up))))
+      (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up)
+      (evil-set-initial-state 'shell-mode 'emacs)
+      (evil-set-initial-state 'comint-mode 'emacs)
+      (evil-set-initial-state 'compilation-mode 'emacs)
+      (evil-set-initial-state 'inferior-lisp 'emacs)
+      (evil-set-initial-state 'help-mode 'emacs)
+      (evil-set-initial-state 'inferior-python-mode 'emacs))))
