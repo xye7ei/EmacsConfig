@@ -5,6 +5,10 @@
   (kill-buffer)
   (other-window -1))
 
+(defun kill-buffer-without-ask (buf)
+  (interactive "B")
+  (kill-buffer buf))
+
 (defun recenter-top-bottom-other-window ()
   (interactive)
   (save-excursion
@@ -82,6 +86,7 @@
 (global-set-key (kbd "<apps> f")	'change-face-size)
 
 (global-set-key (kbd "C-S-SPC")		'mark-till-here) 
+(global-set-key (kbd "C-x M-k")		'kill-buffer-without-ask)
 (global-set-key (kbd "C-x 4 k")		'kill-other-buffer)
 (global-set-key (kbd "C-x p")		'(lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-x \\")		'kill-helper-buffers) 
@@ -89,7 +94,8 @@
 (global-set-key (kbd "C--")		'(lambda () (interactive) (increase-face-size -5)))
 (global-set-key (kbd "C-<up>")		'(lambda () (interactive) (scroll-down 2)))
 (global-set-key (kbd "C-<down>")	'(lambda () (interactive) (scroll-up 2))) 
-(global-set-key (kbd "C-S-l") 'recenter-top-bottom-other-window)
+(global-set-key (kbd "C-S-l")           'recenter-top-bottom-other-window)
+(global-set-key (kbd "C-+")             'hs-minor-mode)
 
 
 
@@ -104,6 +110,8 @@
       (evil-set-initial-state 'shell-mode 'emacs)
       (evil-set-initial-state 'comint-mode 'emacs)
       (evil-set-initial-state 'compilation-mode 'emacs)
+      (evil-set-initial-state 'gud-mode 'emacs)
       (evil-set-initial-state 'inferior-lisp 'emacs)
       (evil-set-initial-state 'help-mode 'emacs)
-      (evil-set-initial-state 'inferior-python-mode 'emacs))))
+      (evil-set-initial-state 'inferior-python-mode 'emacs)
+      (evil-set-initial-state 'dired-mode 'emacs))))
