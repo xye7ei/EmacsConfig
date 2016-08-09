@@ -83,6 +83,12 @@ except:
 "
 		  symb)))))))
 
+(defun my-python-toggle-ipython ()
+  (interactive)
+  (if (equal python-shell-interpreter "python")
+      (setq python-shell-interpreter "ipython")
+    (setq python-shell-interpreter "python")))
+
 ;; Problem by integration of Python module `pyreadline'
 ;; https://github.com/gregsexton/ob-ipython/issues/28
 ;; This issue raises possibly in Emacs > 25.0.
@@ -104,4 +110,7 @@ except:
 	    (define-key python-mode-map (kbd "C-c C-d") 'my-python-pdb)
 	    (define-key python-mode-map (kbd "C-c C-k") 'my-python-run-compilation)
 	    (define-key python-mode-map (kbd "C-c C-b") 'my-python-shell-exec-file)
-	    (define-key python-mode-map (kbd "C-c C-m") 'my-python-run-compilation-with-version)))
+	    (define-key python-mode-map (kbd "C-c C-m") 'my-python-run-compilation-with-version)
+	    (define-key python-mode-map (kbd "C-c C-i") 'my-python-toggle-ipython)
+	    ))
+
