@@ -41,6 +41,8 @@
 (put 'narrow-to-region 'disabled nil)
 (setq inhibit-splash-screen t)
 (setq tab-width 4)
+(setq org-src-fontify-natively t)
+(setq-default indent-tabs-mode nil)
 ;; (setq scroll-margin 3)
 
 ;; Useful minor-modes setups!
@@ -77,3 +79,48 @@
 (setq-default outline-blank-line t)
 
 (my-light-theme)
+
+
+;; Fundamental c++
+
+(add-hook 'c++-mode-hook
+	  (lambda ()
+	    (define-key c++-mode-map (kbd "C-c C-,")
+	      (lambda ()
+		(interactive)
+		(let* ((in (buffer-file-name))
+		       (out (substring in 0 -4)))
+		  ;; (compile (format "g++ %s -g -o %s -std=c++11" in out))
+		  ;; (compile (format "g++ %s -g -o %s -std=c++0x" in out))
+		  (compile (format "g++ %s -g -o %s" in out)))))))
+
+(add-hook 'c++-mode-hook
+	  (lambda ()
+	    (define-key c++-mode-map (kbd "C-c C-.")
+	      (lambda ()
+		(interactive)
+		(let* ((in (buffer-file-name))
+		       (out (substring in 0 -4)))
+		    (shell-command out))))))
+
+(when (fboundp 'evil-mode)
+  (add-hook
+   'evil-mode-hook
+   '(lambda ()
+      (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+      (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up)
+      (evil-set-initial-state 'shell-mode 'emacs)
+      (evil-set-initial-state 'comint-mode 'emacs)
+      (evil-set-initial-state 'compilation-mode 'emacs)
+      (evil-set-initial-state 'gud-mode 'emacs)
+      (evil-set-initial-state 'inferior-lisp 'emacs)
+      (evil-set-initial-state 'help-mode 'emacs)
+      (evil-set-initial-state 'inferior-python-mode 'emacs)
+      (evil-set-initial-state 'dired-mode 'emacs)))
+  (add-hook
+   'evil-mode-hook
+   '(lambda ()
+      (define-key evil-normal-state-map (kbd "SPC `") (lambda (arg)
+							(interactive "P")
+							(insert-pair arg ?` ?`)))
+      )))

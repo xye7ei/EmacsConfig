@@ -72,6 +72,9 @@
 (global-set-key (kbd "C-M-{") 'insert-pair)
 (global-set-key (kbd "C-M-\"") 'insert-pair)
 (global-set-key (kbd "C-M-\'") 'insert-pair) 
+(global-set-key (kbd "C-M-`") '(lambda (arg)
+				 (interactive "P")
+				 (insert-pair arg ?` ?`)))
 (global-set-key (kbd "C-M-]") 'delete-pair) 
 
 
@@ -98,20 +101,15 @@
 (global-set-key (kbd "C-+")             'hs-minor-mode)
 
 
-
 ;;; 
 
-(when (fboundp 'evil-mode)
-  (add-hook
-   'evil-mode-hook
-   '(lambda ()
-      (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-      (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up)
-      (evil-set-initial-state 'shell-mode 'emacs)
-      (evil-set-initial-state 'comint-mode 'emacs)
-      (evil-set-initial-state 'compilation-mode 'emacs)
-      (evil-set-initial-state 'gud-mode 'emacs)
-      (evil-set-initial-state 'inferior-lisp 'emacs)
-      (evil-set-initial-state 'help-mode 'emacs)
-      (evil-set-initial-state 'inferior-python-mode 'emacs)
-      (evil-set-initial-state 'dired-mode 'emacs))))
+(add-hook 'hs-minor-mode-hook
+	  (lambda ()
+            (define-key hs-minor-mode-map (kbd "C-`")
+              (lambda (arg)
+                "Easy folding with specified level."
+                (interactive "c")
+                (let ((val (- arg 48)))
+                  (if (zerop val) (hs-show-all) (hs-hide-level val)))))))
+
+;;; 
