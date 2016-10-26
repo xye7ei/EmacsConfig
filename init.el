@@ -1,29 +1,10 @@
-;; This file incorperate some fundamental extensive functions.
+;; Package settings
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(package-initialize)
 
-;; Package activation.
-;; - Make it called-by-need to save startup performance.
-(defun my-packages-activate ()
-  (interactive)
-  (require 'package)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-  (package-initialize))
-
-
-;; Dark Theme 
-(defun my-dark-theme ()
-  (interactive)
-  (custom-set-variables
-   '(custom-enabled-themes (quote (deeper-blue))))
-  (custom-set-faces
-   '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 90 :width normal))))))
-
-;; Light Theme 
-(defun my-light-theme ()
-  (interactive)
-  (custom-set-variables
-   '(custom-enabled-themes (quote (leuven))))
-  (custom-set-faces
-   '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 90 :width normal))))))
+(custom-set-faces
+ '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 90 :width normal)))))
 
 
 ;; Backup settings.
@@ -42,85 +23,83 @@
 (setq inhibit-splash-screen t)
 (setq tab-width 4)
 (setq org-src-fontify-natively t)
-(setq-default indent-tabs-mode nil)
 ;; (setq scroll-margin 3)
-
-;; Useful minor-modes setups!
-(global-auto-revert-mode 1)
-(global-linum-mode 1)
-(show-paren-mode 1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(electric-pair-mode 1)
-(add-hook 'minibuffer-setup-hook '(lambda () (interactive) (electric-pair-mode 0)))
-(add-hook 'minibuffer-exit-hook '(lambda () (interactive) (electric-pair-mode 1)))
-
-
-
-;; Auxiliary settings.
-(setq find-function-C-source-directory "C:/emacs/src/")
-; (setq default-directory "C:/Users/Shellay/OneDrive/")
-
-;; (when (package-installed-p 'evil)
-;;   (evil-mode))
-
-(when (fboundp 'rainbow-delimiters-mode)
-  (define-globalized-minor-mode global-rainbow-delimiters-mode
-    rainbow-delimiters-mode rainbow-delimiters-mode)
-  (global-rainbow-delimiters-mode 1))
-
-(when (fboundp 'pretty-lambdada-mode)
-  (define-globalized-minor-mode global-pretty-lambda-mode
-    pretty-lambda-mode pretty-lambda-mode)
-  (global-pretty-lambda-mode))
-
+(setq-default indent-tabs-mode nil)
 (setq-default c-basic-offset 4)
 (setq-default outline-blank-line t)
 
-(my-light-theme)
+
+;; Minor-modes
+;; - close for simplifying views
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+;; - open for easy use
+(electric-pair-mode 1)
+(global-auto-revert-mode 1)
+(global-linum-mode 1)
+(show-paren-mode 1)
 
 
-;; Fundamental c++
+;; Compile commands
+(global-set-key (kbd "<C-return>") 'compile)
+(global-set-key (kbd "<C-M-return>") 'recompile)
 
+(defun hook-compile-command (hook form)
+  (eval `(add-hook ',hook (lambda ()
+                            (set (make-local-variable 'compile-command)
+                                 ,form)))))
+
+(let ((bfn '(buffer-file-name))
+      (bfn0 '(file-name-sans-extension (buffer-file-name))))
+  (hook-compile-command 'python-mode-hook `(format "python \"%s\"" ,bfn))
+  (hook-compile-command 'scala-mode-hook `(format "scala \"%s\"" ,bfn))
+  (hook-compile-command 'haskell-mode-hook `(format "ghc -Wall \"%s\"" ,bfn))
+  (hook-compile-command 'c-mode-hook `(format "gcc -g -o %s \"%s\""
+                                              ,bfn0 ,bfn))
+  (hook-compile-command 'c++-mode-hook
+                        `(format "g++ -std=c++14 -g -Wall -O0 -o \"%s\" \"%s\""
+                                 ,bfn0 ,bfn)))
+
+
+;; C++ stuff
 (add-hook 'c++-mode-hook
-	  (lambda ()
-	    (define-key c++-mode-map (kbd "C-c C-,")
-	      (lambda ()
-		(interactive)
-		(let* ((in (buffer-file-name))
-		       (out (substring in 0 -4)))
-		  ;; (compile (format "g++ %s -g -o %s -std=c++11" in out))
-		  ;; (compile (format "g++ %s -g -o %s -std=c++0x" in out))
-		  (compile (format "g++ %s -g -o %s" in out)))))))
+          (lambda ()
+            (define-key c++-mode-map (kbd "C-c C-.")
+              (let ((bfn0 (file-name-sans-extension (buffer-file-name))))
+                (shell-command (format "\"./%s\"" bfn0))))))
 
-(add-hook 'c++-mode-hook
-	  (lambda ()
-	    (define-key c++-mode-map (kbd "C-c C-.")
-	      (lambda ()
-		(interactive)
-		(let* ((in (buffer-file-name))
-		       (out (substring in 0 -4)))
-		    (shell-command out))))))
 
-(when (fboundp 'evil-mode)
-  (add-hook
-   'evil-mode-hook
-   '(lambda ()
-      (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-      (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up)
-      (evil-set-initial-state 'shell-mode 'emacs)
-      (evil-set-initial-state 'comint-mode 'emacs)
-      (evil-set-initial-state 'compilation-mode 'emacs)
-      (evil-set-initial-state 'gud-mode 'emacs)
-      (evil-set-initial-state 'inferior-lisp 'emacs)
-      (evil-set-initial-state 'help-mode 'emacs)
-      (evil-set-initial-state 'inferior-python-mode 'emacs)
-      (evil-set-initial-state 'dired-mode 'emacs)))
-  (add-hook
-   'evil-mode-hook
-   '(lambda ()
-      (define-key evil-normal-state-map (kbd "SPC `") (lambda (arg)
-							(interactive "P")
-							(insert-pair arg ?` ?`)))
-      )))
+;; Python stuff
+(custom-set-variables
+ '(gud-pdb-command-name "python -m pdb"))
+(add-hook 'python-mode-hook
+          (lambda ()
+            (define-key python-mode-map (kbd "C-c C-d") 'pdb)
+            (when (fboundp 'jedi:setup)
+              (jedi-mode 1))
+            ))
+(global-set-key (kbd "C-M-]") 'delete-pair)
+
+
+;; Further utilities
+(global-set-key (kbd "C-M-=") 'hs-minor-mode)
+(add-hook 'hs-minor-mode-hook
+	  (lambda ()
+            (define-key hs-minor-mode-map (kbd "C-`")
+              (lambda (arg)
+                "Easy folding with specified level."
+                (interactive "c")
+                (let ((val (- arg 48)))
+                  (if (zerop val) (hs-show-all) (hs-hide-level val)))))))
+
+
+(defun increase-face-size (x)
+  (let ((h (face-attribute 'default :height)))
+    (set-face-attribute 'default nil :height (+ h x))))
+
+(global-set-key (kbd "C-=") (lambda () (interactive) (increase-face-size 5)))
+(global-set-key (kbd "C--") (lambda () (interactive) (increase-face-size -5)))
+(global-set-key (kbd "C-<up>") (lambda () (interactive) (scroll-down 2)))
+(global-set-key (kbd "C-<down>") (lambda () (interactive) (scroll-up 2))) 
+
