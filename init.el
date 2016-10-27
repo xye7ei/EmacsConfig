@@ -3,8 +3,9 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 
-(custom-set-faces
- '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 90 :width normal)))))
+(when (eq system-type 'windows-nt)
+  (custom-set-faces
+   '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 90 :width normal))))))
 
 
 ;; Backup settings.
@@ -52,22 +53,18 @@
 
 (let ((bfn '(buffer-file-name))
       (bfn0 '(file-name-sans-extension (buffer-file-name))))
-  (hook-compile-command 'python-mode-hook `(format "python \"%s\"" ,bfn))
-  (hook-compile-command 'scala-mode-hook `(format "scala \"%s\"" ,bfn))
-  (hook-compile-command 'haskell-mode-hook `(format "ghc -Wall \"%s\"" ,bfn))
-  (hook-compile-command 'c-mode-hook `(format "gcc -g -o %s \"%s\""
+  (hook-compile-command 'c-mode-hook `(format "gcc -g -o \"%s\" \"%s\""
                                               ,bfn0 ,bfn))
   (hook-compile-command 'c++-mode-hook
                         `(format "g++ -std=c++14 -g -Wall -O0 -o \"%s\" \"%s\""
-                                 ,bfn0 ,bfn)))
+                                 ,bfn0 ,bfn))
+  (hook-compile-command 'python-mode-hook
+                        (let ((py (if (eq system-type 'windows-nt) "python" "python3")))
+                          `(format "%s \"%s\"" ,py ,bfn)))
+  (hook-compile-command 'scala-mode-hook `(format "scala \"%s\"" ,bfn))
+  (hook-compile-command 'haskell-mode-hook `(format "ghc -Wall \"%s\"" ,bfn))
+  )
 
-
-;; C++ stuff
-(add-hook 'c++-mode-hook
-          (lambda ()
-            (define-key c++-mode-map (kbd "C-c C-.")
-              (let ((bfn0 (file-name-sans-extension (buffer-file-name))))
-                (shell-command (format "\"./%s\"" bfn0))))))
 
 
 ;; Python stuff
@@ -75,17 +72,21 @@
  '(gud-pdb-command-name "python -m pdb"))
 (add-hook 'python-mode-hook
           (lambda ()
+            (define-key python-mode-map (kbd "C-c C-k")
+              (lambda () (interactive)
+                (let ((py (if (eq system-type 'windows-nt) "python" "python3")))
+                  (compile (format "%s \"%s\"" py (buffer-file-name))))))
             (define-key python-mode-map (kbd "C-c C-d") 'pdb)
             (when (fboundp 'jedi:setup)
-              (jedi-mode 1))
+              (jedi:setup))
             ))
-(global-set-key (kbd "C-M-]") 'delete-pair)
 
 
 ;; Further utilities
+(global-set-key (kbd "C-M-]") 'delete-pair)
 (global-set-key (kbd "C-M-=") 'hs-minor-mode)
 (add-hook 'hs-minor-mode-hook
-	  (lambda ()
+          (lambda ()
             (define-key hs-minor-mode-map (kbd "C-`")
               (lambda (arg)
                 "Easy folding with specified level."
@@ -101,5 +102,4 @@
 (global-set-key (kbd "C-=") (lambda () (interactive) (increase-face-size 5)))
 (global-set-key (kbd "C--") (lambda () (interactive) (increase-face-size -5)))
 (global-set-key (kbd "C-<up>") (lambda () (interactive) (scroll-down 2)))
-(global-set-key (kbd "C-<down>") (lambda () (interactive) (scroll-up 2))) 
-
+(global-set-key (kbd "C-<down>") (lambda () (interactive) (scroll-up 2)))
