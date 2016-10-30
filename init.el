@@ -94,11 +94,19 @@
                 (let ((val (- arg 48)))
                   (if (zerop val) (hs-show-all) (hs-hide-level val)))))))
 
+(when (fboundp 'rainbow-delimiters-mode)
+  (define-globalized-minor-mode my-global-rainbow-delimiters-mode
+    rainbow-delimiters-mode
+    (lambda () (rainbow-delimiters-mode-enable)))
+  (my-global-rainbow-delimiters-mode 1)
+  )
+
 
 (defun increase-face-size (x)
   (let ((h (face-attribute 'default :height)))
     (set-face-attribute 'default nil :height (+ h x))))
 
+(global-set-key (kbd "C-S-d") (lambda () (interactive) (delete-backward-char)))
 (global-set-key (kbd "C-=") (lambda () (interactive) (increase-face-size 5)))
 (global-set-key (kbd "C--") (lambda () (interactive) (increase-face-size -5)))
 (global-set-key (kbd "C-<up>") (lambda () (interactive) (scroll-down 2)))
