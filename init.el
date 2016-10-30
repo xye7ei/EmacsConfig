@@ -106,7 +106,7 @@
   (let ((h (face-attribute 'default :height)))
     (set-face-attribute 'default nil :height (+ h x))))
 
-(global-set-key (kbd "C-S-d") (lambda () (interactive) (delete-backward-char)))
+(global-set-key (kbd "C-S-d") (lambda () (interactive) (delete-backward-char 1)))
 (global-set-key (kbd "C-=") (lambda () (interactive) (increase-face-size 5)))
 (global-set-key (kbd "C--") (lambda () (interactive) (increase-face-size -5)))
 (global-set-key (kbd "C-<up>") (lambda () (interactive) (scroll-down 2)))
