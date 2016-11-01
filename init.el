@@ -66,6 +66,18 @@
   )
 
 
+;; C/C++ stuff
+(defun insert-c-block-comment ()
+  (interactive) 
+  (insert-pair 0 "/*" "*/"))
+
+(add-hook 'c-mode-hook
+          (lambda ()
+            (define-key c-mode-map (kbd "C-M-;") 'insert-c-block-comment)))
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (define-key c++-mode-map (kbd "C-M-;") 'insert-c-block-comment)))
+
 
 ;; Python stuff
 (custom-set-variables
