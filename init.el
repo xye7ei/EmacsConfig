@@ -67,9 +67,14 @@
 
 
 ;; C/C++ stuff
-(defun insert-c-block-comment ()
-  (interactive) 
-  (insert-pair 0 "/*" "*/"))
+(defun insert-c-block-comment (arg)
+  (interactive "P")
+  (save-excursion
+    ;; without marking is `insert-pair' unavailable for empty target.
+    (when (not mark-active)
+      (set-mark (point)))
+    (insert-pair arg "/*" "*/"))
+  (forward-char 2))
 
 (add-hook 'c-mode-hook
           (lambda ()
