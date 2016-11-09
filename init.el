@@ -28,6 +28,7 @@
 (setq-default indent-tabs-mode nil)
 (setq-default c-basic-offset 4)
 (setq-default outline-blank-line t)
+(setq-default buffer-file-coding-system 'utf-8-unix)
 
 
 ;; Minor-modes
@@ -53,7 +54,7 @@
 
 (let ((bfn '(buffer-file-name))
       (bfn0 '(file-name-sans-extension (buffer-file-name))))
-  (hook-compile-command 'c-mode-hook `(format "gcc -g -o \"%s\" \"%s\""
+  (hook-compile-command 'c-mode-hook `(format "gcc -std=c99 -g -Wall -O0 -o \"%s\" \"%s\""
                                               ,bfn0 ,bfn))
   (hook-compile-command 'c++-mode-hook
                         `(format "g++ -std=c++14 -g -Wall -O0 -o \"%s\" \"%s\""
