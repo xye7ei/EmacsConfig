@@ -47,31 +47,31 @@
 (global-set-key (kbd "<C-return>") 'compile)
 (global-set-key (kbd "<C-M-return>") 'recompile)
 
-(defun hook-compile-command (hook form)
+(defun my::hook-compile-command (hook form)
   (eval `(add-hook ',hook (lambda ()
                             (set (make-local-variable 'compile-command)
                                  ,form)))))
 
 (let ((bfn '(buffer-file-name))
       (bfn0 '(file-name-sans-extension (buffer-file-name))))
-  (hook-compile-command 'c-mode-hook `(format "gcc -std=c99 -g -Wall -O0 -o \"%s\" \"%s\""
+  (my::hook-compile-command 'c-mode-hook `(format "gcc -std=c99 -g -Wall -O0 -o \"%s\" \"%s\""
                                               ,bfn0 ,bfn))
-  (hook-compile-command 'c++-mode-hook
+  (my::hook-compile-command 'c++-mode-hook
                         `(format "g++ -std=c++14 -g -Wall -O0 -o \"%s\" \"%s\""
                                  ,bfn0 ,bfn))
-  (hook-compile-command 'python-mode-hook
+  (my::hook-compile-command 'python-mode-hook
                         (let ((py (if (eq system-type 'windows-nt) "python" "python3")))
                           `(format "%s \"%s\"" ,py ,bfn)))
-  (hook-compile-command 'scala-mode-hook `(format "scala \"%s\"" ,bfn))
-  (hook-compile-command 'haskell-mode-hook `(format "ghc -Wall \"%s\"" ,bfn))
+  (my::hook-compile-command 'scala-mode-hook `(format "scala \"%s\"" ,bfn))
+  (my::hook-compile-command 'haskell-mode-hook `(format "ghc -Wall \"%s\"" ,bfn))
   )
 
 
 ;; C/C++ stuff
-(defun insert-c-block-comment (arg)
+(defun my::insert-c-block-comment (arg)
   (interactive "P")
   (save-excursion
-    ;; without marking is `insert-pair' unavailable for empty target.
+    ;; Without marking, `insert-pair' is unavailable for empty target.
     (when (not mark-active)
       (set-mark (point)))
     (insert-pair arg "/*" "*/"))
@@ -79,25 +79,39 @@
 
 (add-hook 'c-mode-hook
           (lambda ()
-            (define-key c-mode-map (kbd "C-M-;") 'insert-c-block-comment)))
+            (define-key c-mode-map (kbd "C-M-;") 'my::insert-c-block-comment)))
 (add-hook 'c++-mode-hook
           (lambda ()
-            (define-key c++-mode-map (kbd "C-M-;") 'insert-c-block-comment)))
+            (define-key c++-mode-map (kbd "C-M-;") 'my::insert-c-block-comment)))
 
 
 ;; Python stuff
 (custom-set-variables
  '(gud-pdb-command-name "python -m pdb"))
+(setq my::python-command
+      (if (eq system-type 'windows-nt) "python" "python3"))
 (add-hook 'python-mode-hook
           (lambda ()
-            (define-key python-mode-map (kbd "C-c C-k")
-              (lambda () (interactive)
-                (let ((py (if (eq system-type 'windows-nt) "python" "python3")))
-                  (compile (format "%s \"%s\"" py (buffer-file-name))))))
-            (define-key python-mode-map (kbd "C-c C-d") 'pdb)
             (when (fboundp 'jedi:setup)
               (jedi:setup))
-            ))
+            (define-key python-mode-map (kbd "C-c C-k")
+              (lambda () (interactive)
+                (compile (format "%s \"%s\""
+                                 my::python-command (buffer-file-name)))))
+            ;; (define-key python-mode-map (kbd "C-c C-d") 'pdb)
+            (define-key python-mode-map (kbd "C-c C-d")
+              (lambda () (interactive)
+                (pdb (format "%s -m pdb \"%s\"" my::python-command (buffer-file-name)))))))
+;; Problem by integration of Python module `pyreadline'
+;; https://github.com/gregsexton/ob-ipython/issues/28
+;; This issue raises possibly in Emacs > 25.0.
+(setq python-shell-completion-native-enable nil)
+
+(defun ipython ()
+  (interactive)
+  (if (equal python-shell-interpreter "python")
+      (setq python-shell-interpreter "ipython")
+    (setq python-shell-interpreter "python")))
 
 
 ;; Further utilities
@@ -120,12 +134,12 @@
   )
 
 
-(defun increase-face-size (x)
+(defun my::increase-face-size (x)
   (let ((h (face-attribute 'default :height)))
     (set-face-attribute 'default nil :height (+ h x))))
 
 (global-set-key (kbd "C-S-d") (lambda () (interactive) (delete-backward-char 1)))
-(global-set-key (kbd "C-=") (lambda () (interactive) (increase-face-size 5)))
-(global-set-key (kbd "C--") (lambda () (interactive) (increase-face-size -5)))
+(global-set-key (kbd "C-=") (lambda () (interactive) (my::increase-face-size 5)))
+(global-set-key (kbd "C--") (lambda () (interactive) (my::increase-face-size -5)))
 (global-set-key (kbd "C-<up>") (lambda () (interactive) (scroll-down 2)))
 (global-set-key (kbd "C-<down>") (lambda () (interactive) (scroll-up 2)))
