@@ -37,10 +37,13 @@
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 ;; - open for easy use
-(electric-pair-mode 1)
-(global-auto-revert-mode 1)
-(global-linum-mode 1)
-(show-paren-mode 1)
+(electric-pair-mode)
+(show-paren-mode)
+(column-number-mode)
+(global-auto-revert-mode)
+(global-linum-mode)
+;; (winner-mode)
+;; (ido-mode)
 
 
 ;; Compile commands
