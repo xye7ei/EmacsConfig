@@ -135,6 +135,9 @@
   (my-global-rainbow-delimiters-mode 1)
   )
 
+(when (fboundp 'evil-mode)
+  (setq evil-want-C-u-scroll t))
+
 
 (defun my::increase-face-size (x)
   (let ((h (face-attribute 'default :height)))
