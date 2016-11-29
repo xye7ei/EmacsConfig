@@ -23,12 +23,13 @@
 (put 'narrow-to-region 'disabled nil)
 (setq inhibit-splash-screen t)
 (setq tab-width 4)
-(setq org-src-fontify-natively t)
 (setq buffer-file-coding-system 'utf-8-unix)
 (setq indent-tabs-mode nil)
 (setq c-basic-offset 4)
 (setq outline-blank-line t)
-
+;; Preferences for org-mode
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
 
 ;; Minor-modes
 ;; - close for simplifying views
