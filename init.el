@@ -79,9 +79,9 @@
     (insert-pair arg "/*" "*/"))
   (forward-char 2))
 
-(add-hook 'c-mode-hook
+(add-hook 'scala-mode-hook
           (lambda ()
-            (define-key c-mode-map (kbd "C-M-;") 'my::insert-c-block-comment)))
+            (define-key scala-mode-map (kbd "C-M-;") 'my::insert-c-block-comment)))
 (add-hook 'c++-mode-hook
           (lambda ()
             (define-key c++-mode-map (kbd "C-M-;") 'my::insert-c-block-comment)))
