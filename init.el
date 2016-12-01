@@ -140,6 +140,10 @@
   (setq evil-want-C-u-scroll t))
 
 
+(defun my::set-transparency (arg)
+  (interactive "nInput alpha value: ")
+  (set-frame-parameter nil 'alpha (list arg arg)))
+
 (defun my::increase-face-size (x)
   (let ((h (face-attribute 'default :height)))
     (set-face-attribute 'default nil :height (+ h x))))
