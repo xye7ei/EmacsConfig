@@ -1,6 +1,12 @@
 ;; Package settings
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+
+(custom-set-variables
+ '(package-archives
+   (quote
+    (("gnu" . "http://elpa.gnu.org/packages/")
+     ("melpa-stable" . "http://stable.melpa.org/packages/")))))
+
 (package-initialize)
 
 (when (eq system-type 'windows-nt)
@@ -41,7 +47,7 @@
 (show-paren-mode)
 (column-number-mode)
 (global-auto-revert-mode)
-(global-linum-mode)
+;; (global-linum-mode)
 ;; (winner-mode)
 ;; (ido-mode)
 
@@ -57,17 +63,19 @@
 
 (let ((bfn '(buffer-file-name))
       (bfn0 '(file-name-sans-extension (buffer-file-name))))
-  (my::hook-compile-command 'c-mode-hook `(format "gcc -std=c99 -g -Wall -O0 -o \"%s\" \"%s\""
-                                              ,bfn0 ,bfn))
+  (my::hook-compile-command 'c-mode-hook
+			    `(format "gcc -std=c99 -g -Wall -O0 -o \"%s\" \"%s\""
+				     ,bfn0 ,bfn))
   (my::hook-compile-command 'c++-mode-hook
-                        `(format "g++ -std=c++14 -g -Wall -O0 -o \"%s\" \"%s\""
-                                 ,bfn0 ,bfn))
+			    `(format "g++ -std=c++14 -g -Wall -O0 -o \"%s\" \"%s\""
+				     ,bfn0 ,bfn))
   (my::hook-compile-command 'python-mode-hook
-                        (let ((py (if (eq system-type 'windows-nt) "python" "python3")))
-                          `(format "%s \"%s\"" ,py ,bfn)))
-  (my::hook-compile-command 'scala-mode-hook `(format "scala \"%s\"" ,bfn))
-  (my::hook-compile-command 'haskell-mode-hook `(format "ghc -Wall \"%s\"" ,bfn))
-  )
+			    (let ((py (if (eq system-type 'windows-nt) "python" "python3")))
+			      `(format "%s \"%s\"" ,py ,bfn)))
+  (my::hook-compile-command 'scala-mode-hook
+			    `(format "scala \"%s\"" ,bfn))
+  (my::hook-compile-command 'haskell-mode-hook
+			    `(format "runhaskell -Wall \"%s\"" ,bfn)))
 
 
 ;; C/C++ stuff
@@ -109,6 +117,20 @@
 ;; https://github.com/gregsexton/ob-ipython/issues/28
 ;; This issue raises possibly in Emacs > 25.0.
 (setq python-shell-completion-native-enable nil)
+
+(setq python-shell-setup-codes `("
+from pprint import pprint as __pprint
+import sys as __sys
+
+__ORIG_DISP_HOOK = __sys.displayhook
+
+def __pp_hook(value):
+    if None is not value:
+        __builtins__._ = value
+        __pprint(value)
+
+__sys.displayhook = __pp_hook")
+      )
 
 (defun ipython ()
   (interactive)
