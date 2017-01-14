@@ -75,7 +75,7 @@
   (my::hook-compile-command 'scala-mode-hook
 			    `(format "scala \"%s\"" ,bfn))
   (my::hook-compile-command 'haskell-mode-hook
-			    `(format "runhaskell -Wall \"%s\"" ,bfn)))
+			    `(format "stack ghc \"%s\" -- -fno-code" ,bfn)))
 
 
 ;; C/C++ stuff
@@ -139,9 +139,18 @@ __sys.displayhook = __pp_hook")
     (setq python-shell-interpreter "python")))
 
 
+;; Aux minor mode settings
+(when (fboundp 'rainbow-delimiters-mode)
+  (define-globalized-minor-mode my-global-rainbow-delimiters-mode
+    rainbow-delimiters-mode
+    (lambda () (rainbow-delimiters-mode-enable)))
+  (my-global-rainbow-delimiters-mode 1))
+
+(when (fboundp 'evil-mode)
+  (setq evil-want-C-u-scroll t))
+
+
 ;; Further utilities
-(global-set-key (kbd "C-M-]") 'delete-pair)
-(global-set-key (kbd "C-M-=") 'hs-minor-mode)
 (add-hook 'hs-minor-mode-hook
           (lambda ()
             (define-key hs-minor-mode-map (kbd "C-`")
@@ -151,27 +160,40 @@ __sys.displayhook = __pp_hook")
                 (let ((val (- arg 48)))
                   (if (zerop val) (hs-show-all) (hs-hide-level val)))))))
 
-(when (fboundp 'rainbow-delimiters-mode)
-  (define-globalized-minor-mode my-global-rainbow-delimiters-mode
-    rainbow-delimiters-mode
-    (lambda () (rainbow-delimiters-mode-enable)))
-  (my-global-rainbow-delimiters-mode 1)
-  )
+(defun my-swap-pair ()
+  (interactive)
+  (save-excursion
+    (let* ((point-open (point))
+	   (point-close (scan-sexps point-open 1))
+	   (open-old (char-after))
+	   (open (car (alist-get open-old '((?\( ?\[)
+					    (?\[ ?\{)
+					    (?\{ ?\()
+					    (?\' ?\")
+					    (?\" ?\'))))))
+      (when (not (eq open nil))
+	(let ((close (car (alist-get open insert-pair-alist))))
+	  (when (not (eq close nil))
+	    (delete-char 1) (insert-char open) (goto-char point-close)
+	    (delete-char -1) (insert-char close) (goto-char point-open)))))))
 
-(when (fboundp 'evil-mode)
-  (setq evil-want-C-u-scroll t))
+(global-set-key (kbd "M-[") 'my-swap-pair)
+(global-set-key (kbd "C-M-]") 'delete-pair)
+(global-set-key (kbd "C-M-=") 'hs-minor-mode)
 
 
-(defun my::set-transparency (arg)
+;; Interface utitlies
+
+(defun my-set-transparency (arg)
   (interactive "nInput alpha value: ")
   (set-frame-parameter nil 'alpha (list arg arg)))
 
-(defun my::increase-face-size (x)
+(defun my-increase-face-size (x)
   (let ((h (face-attribute 'default :height)))
     (set-face-attribute 'default nil :height (+ h x))))
 
 (global-set-key (kbd "C-S-d") (lambda () (interactive) (delete-backward-char 1)))
-(global-set-key (kbd "C-=") (lambda () (interactive) (my::increase-face-size 5)))
-(global-set-key (kbd "C--") (lambda () (interactive) (my::increase-face-size -5)))
+(global-set-key (kbd "C-=") (lambda () (interactive) (my-increase-face-size 5)))
+(global-set-key (kbd "C--") (lambda () (interactive) (my-increase-face-size -5)))
 (global-set-key (kbd "C-<up>") (lambda () (interactive) (scroll-down 2)))
 (global-set-key (kbd "C-<down>") (lambda () (interactive) (scroll-up 2)))
