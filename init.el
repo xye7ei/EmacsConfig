@@ -47,6 +47,7 @@
 (show-paren-mode)
 (column-number-mode)
 (global-auto-revert-mode)
+(global-undo-tree-mode)
 ;; (global-linum-mode)
 ;; (winner-mode)
 ;; (ido-mode)
@@ -180,6 +181,9 @@ __sys.displayhook = __pp_hook")
 (global-set-key (kbd "M-[") 'my-swap-pair)
 (global-set-key (kbd "C-M-]") 'delete-pair)
 (global-set-key (kbd "C-M-=") 'hs-minor-mode)
+
+;; Convenient editing
+(global-set-key (kbd "C->") '(lambda () (interactive) (insert-string " -> ")))
 
 
 ;; Interface utitlies
