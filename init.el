@@ -62,24 +62,26 @@
                             (set (make-local-variable 'compile-command)
                                  ,form)))))
 
-(let ((bfn '(buffer-file-name))
-      (bfn0 '(file-name-sans-extension (buffer-file-name))))
-  (my-hook-compile-command 'c-mode-hook
-			    `(format "gcc -std=c99 -g -Wall -O0 -o \"%s\" \"%s\""
-				     ,bfn0 ,bfn))
-  (my-hook-compile-command 'c++-mode-hook
-			    `(format "g++ -std=c++14 -g -Wall -O0 -o \"%s\" \"%s\""
-				     ,bfn0 ,bfn))
-  (my-hook-compile-command 'python-mode-hook
-			    (let ((py (if (eq system-type 'windows-nt) "python" "python3")))
-			      `(format "%s \"%s\"" ,py ,bfn)))
-  (my-hook-compile-command 'scala-mode-hook
-			    `(format "scala \"%s\"" ,bfn))
-  (my-hook-compile-command 'haskell-mode-hook
-			    `(format "stack ghc \"%s\" -- -fno-code" ,bfn)))
+(my-hook-compile-command 'c-mode-hook
+			 `(format "gcc -std=c99 -g -Wall -O0 -o \"%s\" \"%s\""
+				  (file-name-base) (buffer-file-name)))
+(my-hook-compile-command 'c++-mode-hook
+			 `(format "g++ -std=c++14 -g -Wall -O0 -o \"%s\" \"%s\""
+				  (file-name-base) (buffer-file-name)))
+(my-hook-compile-command 'python-mode-hook
+			 `(format "python3 \"%s\"" (buffer-file-name)))
+(my-hook-compile-command 'scala-mode-hook
+			 `(format "scala \"%s\"" (buffer-file-name)))
+(my-hook-compile-command 'haskell-mode-hook
+			`(format "ghc \"%s\" -fno-code" (buffer-file-name)))
+(my-hook-compile-command 'java-mode-hook
+			`(format "javac \"%s\" && java -cp \"%s\" %s"
+				(buffer-file-name)
+				default-directory
+				(file-name-base)))
 
 
-;; C/C++ stuff
+;; C/C++/Java stuff
 (defun my-insert-c-block-comment (arg)
   (interactive "P")
   (save-excursion
@@ -106,6 +108,10 @@
       (set-mark (point)))
     (insert-pair arg "{-" "-}"))
   (forward-char 2))
+
+(add-hook 'haskell-mode-hook
+          (lambda ()
+            (define-key haskell-mode-map (kbd "C-M-;") 'my-insert-haskell-block-comment)))
 
 
 ;; Python stuff
