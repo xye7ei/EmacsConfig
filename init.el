@@ -75,7 +75,8 @@
 (my-hook-compile-command 'haskell-mode-hook
 			`(format "ghc \"%s\" -fno-code" (buffer-file-name)))
 (my-hook-compile-command 'java-mode-hook
-			`(format "javac \"%s\" && java -cp \"%s\" %s"
+			`(format "javac \"%s\" && java -ea -cp \"%s\" %s"
+				 ;; -ea : Run with assertion enabled.
 				(buffer-file-name)
 				default-directory
 				(file-name-base)))
@@ -94,6 +95,9 @@
 (add-hook 'scala-mode-hook
           (lambda ()
             (define-key scala-mode-map (kbd "C-M-;") 'my-insert-c-block-comment)))
+(add-hook 'java-mode-hook
+          (lambda ()
+            (define-key java-mode-map (kbd "C-M-;") 'my-insert-c-block-comment)))
 (add-hook 'c++-mode-hook
           (lambda ()
             (define-key c++-mode-map (kbd "C-M-;") 'my-insert-c-block-comment)))
