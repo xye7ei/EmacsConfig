@@ -30,12 +30,14 @@
 (setq inhibit-splash-screen t)
 (setq tab-width 4)
 (setq buffer-file-coding-system 'utf-8-unix)
-(setq indent-tabs-mode nil)
 (setq c-basic-offset 4)
 (setq outline-blank-line t)
+(setq-default indent-tabs-mode nil)
+
 ;; Preferences for org-mode
 (setq org-src-fontify-natively t)
 (setq org-src-tab-acts-natively t)
+
 
 ;; Minor-modes
 ;; - close for simplifying views
@@ -126,7 +128,11 @@
 (add-hook 'python-mode-hook
           (lambda ()
             (when (fboundp 'jedi:setup)
-              (jedi:setup))
+              (jedi:setup)
+              (add-hook 'jedi-mode-hook
+                        (lambda ()
+                          (define-key jedi-mode-map
+                            (kbd "C-M-\\") 'jedi:complete))))
             (define-key python-mode-map (kbd "C-c C-k")
               (lambda () (interactive)
                 (compile (format "%s \"%s\""
