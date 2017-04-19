@@ -50,6 +50,7 @@
 (column-number-mode)
 (global-auto-revert-mode)
 (global-undo-tree-mode)
+(global-hl-line-mode)
 ;; (global-linum-mode)
 ;; (winner-mode)
 ;; (ido-mode)
