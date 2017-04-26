@@ -230,3 +230,14 @@ __sys.displayhook = __pp_hook")
 (global-set-key (kbd "C--") (lambda () (interactive) (my-increase-face-size -5)))
 (global-set-key (kbd "C-<up>") (lambda () (interactive) (scroll-down 2)))
 (global-set-key (kbd "C-<down>") (lambda () (interactive) (scroll-up 2)))
+
+
+;; Funny tools
+
+(defun dict (arg)
+  (interactive "MQuery the word: ")
+  (eww (format "https://en.wiktionary.org/wiki/%s" arg)))
+
+(defun wiki (arg)
+  (interactive "MQuery the concept: ")
+  (eww (format "https://en.wikipedia.org/wiki/%s" arg)))
