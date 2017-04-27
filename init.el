@@ -72,7 +72,7 @@
 			 `(format "g++ -std=c++14 -g -Wall -O0 -o \"%s\" \"%s\""
 				  (file-name-base) (buffer-file-name)))
 (my-hook-compile-command 'python-mode-hook
-			 `(format "python3 \"%s\"" (buffer-file-name)))
+			 `(format "python \"%s\"" (buffer-file-name)))
 (my-hook-compile-command 'scala-mode-hook
 			 `(format "scala \"%s\"" (buffer-file-name)))
 (my-hook-compile-command 'haskell-mode-hook
