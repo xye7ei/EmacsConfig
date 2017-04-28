@@ -5,7 +5,8 @@
  '(package-archives
    (quote
     (("gnu" . "http://elpa.gnu.org/packages/")
-     ("melpa-stable" . "http://stable.melpa.org/packages/")))))
+     ("melpa-stable" . "http://stable.melpa.org/packages/")
+     ("melpa" . "https://melpa.org/packages/")))))
 
 (package-initialize)
 
