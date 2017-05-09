@@ -113,26 +113,10 @@
             (define-key c++-mode-map (kbd "C-M-;") 'my-insert-c-block-comment)))
 
 
-;; Haskell stuff
-(defun my-insert-haskell-block-comment (arg)
-  (interactive "P")
-  (save-excursion
-    ;; Without marking, `insert-pair' is unavailable for empty target.
-    (when (not mark-active)
-      (set-mark (point)))
-    (insert-pair arg "{-" "-}"))
-  (forward-char 2))
-
-(add-hook 'haskell-mode-hook
-          (lambda ()
-            (define-key haskell-mode-map (kbd "C-M-;") 'my-insert-haskell-block-comment)))
-
-
 ;; Python stuff
 (custom-set-variables
  '(gud-pdb-command-name "python -m pdb"))
-(setq my-python-command
-      (if (eq system-type 'windows-nt) "python" "python3"))
+
 (add-hook 'python-mode-hook
           (lambda ()
             (when (fboundp 'jedi:setup)
