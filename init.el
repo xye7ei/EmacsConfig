@@ -127,12 +127,10 @@
                             (kbd "C-M-\\") 'jedi:complete))))
             (define-key python-mode-map (kbd "C-c C-k")
               (lambda () (interactive)
-                (compile (format "%s \"%s\""
-                                 my-python-command (buffer-file-name)))))
-            ;; (define-key python-mode-map (kbd "C-c C-d") 'pdb)
+                (compile (format "python \"%s\"" (buffer-file-name)))))
             (define-key python-mode-map (kbd "C-c C-d")
               (lambda () (interactive)
-                (pdb (format "%s -m pdb \"%s\"" my-python-command (buffer-file-name)))))))
+                (pdb (format "python -m pdb \"%s\"" (buffer-file-name)))))))
 ;; Problem by integration of Python module `pyreadline'
 ;; https://github.com/gregsexton/ob-ipython/issues/28
 ;; This issue raises possibly in Emacs > 25.0.
