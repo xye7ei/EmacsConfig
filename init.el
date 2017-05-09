@@ -86,6 +86,12 @@
 				(file-name-base)))
 
 
+;; Language independent hooks
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (hs-minor-mode 1)))
+
+
 ;; C/C++/Java stuff
 (defun my-insert-c-block-comment (arg)
   (interactive "P")
