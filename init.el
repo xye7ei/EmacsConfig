@@ -223,6 +223,21 @@ __sys.displayhook = __pp_hook")
 
 ;; Funny tools
 
+(defun split-window-multiple-ways (x y)
+  "Split the current frame into a grid of X columns and Y rows."
+  ;; https://www.emacswiki.org/emacs/GridLayout
+  (interactive "nColumns: \nnRows: ")
+  ;; one window
+  (delete-other-windows)
+  (dotimes (i (1- x))
+      (split-window-horizontally)
+      (dotimes (j (1- y))
+	(split-window-vertically))
+      (other-window y))
+  (dotimes (j (1- y))
+    (split-window-vertically))
+  (balance-windows))
+
 (defun dict (arg)
   (interactive "MQuery the word: ")
   (eww (format "https://en.wiktionary.org/wiki/%s" arg)))
