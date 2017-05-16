@@ -119,12 +119,12 @@
 
 (add-hook 'python-mode-hook
           (lambda ()
-            (when (fboundp 'jedi:setup)
-              (jedi:setup)
-              (add-hook 'jedi-mode-hook
-                        (lambda ()
-                          (define-key jedi-mode-map
-                            (kbd "C-M-\\") 'jedi:complete))))
+            ;(when (fboundp 'jedi:setup)
+            ;  (jedi:setup)
+            ;  (add-hook 'jedi-mode-hook
+            ;            (lambda ()
+            ;              (define-key jedi-mode-map
+            ;                (kbd "C-M-\\") 'jedi:complete))))
             (define-key python-mode-map (kbd "C-c C-k")
               (lambda () (interactive)
                 (compile (format "python \"%s\"" (buffer-file-name)))))
