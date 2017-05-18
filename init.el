@@ -6,7 +6,20 @@
    (quote
     (("gnu" . "http://elpa.gnu.org/packages/")
      ("melpa-stable" . "http://stable.melpa.org/packages/")
-     ("melpa" . "https://melpa.org/packages/")))))
+     ("melpa" . "https://melpa.org/packages/")))) 
+ '(backup-directory-alist
+   (quote
+    (("tramp-file-name-regexp" . "~/.emacs.s")
+     ("." . "~/.emacs.s"))))
+ '(dired-listing-switches "-laX --group-directories-first")
+ '(gud-pdb-command-name "python -m pdb")
+ '(python-environment-directory "~/.virtualenvs")
+ '(pyvenv-mode t)
+ '(tramp-auto-save-directory "~/.emacs.s/tramp/")
+ '(truncate-lines t)
+ '(neo-window-fixed-size nil)
+ '(neo-window-width 40)
+ )
 
 (package-initialize)
 
