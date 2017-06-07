@@ -149,6 +149,7 @@
 ;; This issue raises possibly in Emacs > 25.0.
 (setq python-shell-completion-native-enable nil)
 
+
 (setq python-shell-setup-codes `("
 from pprint import pprint as __pprint
 import sys as __sys
@@ -168,6 +169,23 @@ __sys.displayhook = __pp_hook")
   (if (equal python-shell-interpreter "python")
       (setq python-shell-interpreter "ipython")
     (setq python-shell-interpreter "python")))
+
+
+;; Anaconda Python support. Use non-conflicting keys w.r.t. evil-mode.
+(when (fboundp 'anaconda-mode)
+  (require 'anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (define-key anaconda-mode-map (kbd "C-c f d") 'anaconda-mode-find-definitions)
+              (define-key anaconda-mode-map (kbd "C-c f a") 'anaconda-mode-find-assignments)
+              (define-key anaconda-mode-map (kbd "C-c f r") 'anaconda-mode-find-references)
+              (define-key anaconda-mode-map (kbd "C-c g d") 'anaconda-mode-find-definitions)
+              (define-key anaconda-mode-map (kbd "C-c g a") 'anaconda-mode-find-assignments)
+              (define-key anaconda-mode-map (kbd "C-c g r") 'anaconda-mode-find-references)
+              (define-key anaconda-mode-map (kbd "C-c g b") 'anaconda-mode-go-back)
+              (define-key anaconda-mode-map (kbd "C-c d") 'anaconda-mode-show-doc)
+              (define-key anaconda-mode-map (kbd "C-c s d") 'anaconda-mode-show-doc))))
 
 
 ;; Aux minor mode settings
@@ -212,13 +230,13 @@ __sys.displayhook = __pp_hook")
 (global-set-key (kbd "C-M-]") 'delete-pair)
 (global-set-key (kbd "C-M-=") 'hs-minor-mode)
 
+
 ;; Convenient editing
 (global-set-key (kbd "C->") '(lambda () (interactive) (insert-string " -> ")))
 (global-set-key (kbd "C-<") '(lambda () (interactive) (insert-string " <- ")))
 
 
 ;; Interface utitlies
-
 (defun my-set-transparency (arg)
   (interactive "nInput alpha value: ")
   (set-frame-parameter nil 'alpha (list arg arg)))
