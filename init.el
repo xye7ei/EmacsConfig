@@ -42,9 +42,9 @@
 (set-language-environment "UTF-8")
 (put 'narrow-to-region 'disabled nil)
 (setq inhibit-splash-screen t)
-(setq tab-width 4)
+(setq tab-width 8)
 (setq buffer-file-coding-system 'utf-8-unix)
-(setq c-basic-offset 4)
+(setq c-basic-offset 2)
 (setq outline-blank-line t)
 (setq-default indent-tabs-mode nil)
 
@@ -80,10 +80,10 @@
                                  ,form)))))
 
 (my-hook-compile-command 'c-mode-hook
-			 `(format "gcc -std=c99 -g -Wall -O0 -o \"%s\" \"%s\""
+			 `(format "gcc -std=c99 -g -Wall -o \"%s\" \"%s\""
 				  (file-name-base) (buffer-file-name)))
 (my-hook-compile-command 'c++-mode-hook
-			 `(format "g++ -std=c++14 -g -Wall -O0 -o \"%s\" \"%s\""
+			 `(format "g++ -std=c++14 -g -Wall -o \"%s\" \"%s\""
 				  (file-name-base) (buffer-file-name)))
 (my-hook-compile-command 'python-mode-hook
 			 `(format "python \"%s\"" (buffer-file-name)))
