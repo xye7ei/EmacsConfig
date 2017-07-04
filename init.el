@@ -188,6 +188,24 @@ __sys.displayhook = __pp_hook")
               (define-key anaconda-mode-map (kbd "C-c s d") 'anaconda-mode-show-doc))))
 
 
+;; XML folding support
+
+(require 'hideshow)
+(require 'sgml-mode)
+(require 'nxml-mode)
+
+(add-hook 'nxml-mode-hook 'hs-minor-mode)
+
+(add-to-list 'hs-special-modes-alist
+             '(nxml-mode
+               "<!--\\|<[^/>]*[^/]>"
+               "-->\\|</[^/>]*[^/]>"
+
+               "<!--"
+               sgml-skip-tag-forward
+               nil))
+
+
 ;; Aux minor mode settings
 (when (fboundp 'rainbow-delimiters-mode)
   (define-globalized-minor-mode my-global-rainbow-delimiters-mode
@@ -196,6 +214,7 @@ __sys.displayhook = __pp_hook")
   (my-global-rainbow-delimiters-mode 1))
 
 (when (fboundp 'evil-mode)
+  (require 'evil)
   (setq evil-want-C-u-scroll t))
 
 
