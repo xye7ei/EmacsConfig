@@ -221,7 +221,7 @@ __sys.displayhook = __pp_hook")
 ;; Further utilities
 (add-hook 'hs-minor-mode-hook
           (lambda ()
-            (define-key hs-minor-mode-map (kbd "C-`")
+            (define-key hs-minor-mode-map (kbd "M-i")
               (lambda (arg)
                 "Easy folding with specified level."
                 (interactive "c")
@@ -269,6 +269,14 @@ __sys.displayhook = __pp_hook")
 (global-set-key (kbd "C--") (lambda () (interactive) (my-increase-face-size -5)))
 (global-set-key (kbd "C-<up>") (lambda () (interactive) (scroll-down 2)))
 (global-set-key (kbd "C-<down>") (lambda () (interactive) (scroll-up 2)))
+
+
+;; Easy debugging
+(add-hook 'gud-mode-hook 'gud-tooltip-mode)
+
+(global-set-key (kbd "<f7>") 'gud-step)
+(global-set-key (kbd "<f8>") 'gud-next)
+(global-set-key (kbd "S-<f8>") 'gud-finish)
 
 
 ;; Funny tools
