@@ -81,20 +81,20 @@
 
 (my-hook-compile-command 'c-mode-hook
 			 `(format "gcc -std=c99 -g -Wall -o \"%s\" \"%s\""
-				  (file-name-base) (buffer-file-name)))
+				  (file-name-base) (buffer-name)))
 (my-hook-compile-command 'c++-mode-hook
 			 `(format "g++ -std=c++14 -g -Wall -o \"%s\" \"%s\""
-				  (file-name-base) (buffer-file-name)))
+				  (file-name-base) (buffer-name)))
 (my-hook-compile-command 'python-mode-hook
-			 `(format "python \"%s\"" (buffer-file-name)))
+			 `(format "python \"%s\"" (buffer-name)))
 (my-hook-compile-command 'scala-mode-hook
-			 `(format "scala \"%s\"" (buffer-file-name)))
+			 `(format "scala \"%s\"" (buffer-name)))
 (my-hook-compile-command 'haskell-mode-hook
-			`(format "ghc \"%s\" -fno-code" (buffer-file-name)))
+			`(format "ghc \"%s\" -fno-code" (buffer-name)))
 (my-hook-compile-command 'java-mode-hook
 			`(format "javac \"%s\" && java -ea -cp \"%s\" %s"
 				 ;; -ea : Run with assertion enabled.
-				(buffer-file-name)
+				(buffer-name)
 				default-directory
 				(file-name-base)))
 
