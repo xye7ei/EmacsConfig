@@ -70,33 +70,24 @@
 ;; (ido-mode)
 
 
-;; Compile commands
-(global-set-key (kbd "<C-return>") 'compile)
-(global-set-key (kbd "<C-M-return>") 'recompile)
+;; Compilation convenience
+(global-set-key (kbd "C-c c") 'compile)
+(global-set-key (kbd "C-c M-c") 'recompile)
 
-(defun my-hook-compile-command (hook form)
-  (eval `(add-hook ',hook (lambda ()
-                            (set (make-local-variable 'compile-command)
-                                 ,form)))))
+(setq compilation-buffer-name-function
+      (lambda (m-mode)
+        (concat "==="
+                (replace-regexp-in-string "===" ""
+                                          (buffer-name))
+                "===")))
 
-(my-hook-compile-command 'c-mode-hook
-			 `(format "gcc -std=c99 -g -Wall -o \"%s\" \"%s\""
-				  (file-name-base) (buffer-name)))
-(my-hook-compile-command 'c++-mode-hook
-			 `(format "g++ -std=c++14 -g -Wall -o \"%s\" \"%s\""
-				  (file-name-base) (buffer-name)))
-(my-hook-compile-command 'python-mode-hook
-			 `(format "python \"%s\"" (buffer-name)))
-(my-hook-compile-command 'scala-mode-hook
-			 `(format "scala \"%s\"" (buffer-name)))
-(my-hook-compile-command 'haskell-mode-hook
-			`(format "ghc \"%s\" -fno-code" (buffer-name)))
-(my-hook-compile-command 'java-mode-hook
-			`(format "javac \"%s\" && java -ea -cp \"%s\" %s"
-				 ;; -ea : Run with assertion enabled.
-				(buffer-name)
-				default-directory
-				(file-name-base)))
+
+;; Debugging convenience
+(add-hook 'gud-mode-hook 'gud-tooltip-mode)
+
+(global-set-key (kbd "<f7>") 'gud-step)
+(global-set-key (kbd "<f8>") 'gud-next)
+(global-set-key (kbd "S-<f8>") 'gud-finish)
 
 
 ;; Language independent hooks
@@ -115,16 +106,6 @@
     (insert-pair arg "/*" "*/"))
   (forward-char 2))
 
-(add-hook 'scala-mode-hook
-          (lambda ()
-            (define-key scala-mode-map (kbd "C-M-;") 'my-insert-c-block-comment)))
-(add-hook 'java-mode-hook
-          (lambda ()
-            (define-key java-mode-map (kbd "C-M-;") 'my-insert-c-block-comment)))
-(add-hook 'c++-mode-hook
-          (lambda ()
-            (define-key c++-mode-map (kbd "C-M-;") 'my-insert-c-block-comment)))
-
 
 ;; Python stuff
 (custom-set-variables
@@ -132,12 +113,6 @@
 
 (add-hook 'python-mode-hook
           (lambda ()
-            ;(when (fboundp 'jedi:setup)
-            ;  (jedi:setup)
-            ;  (add-hook 'jedi-mode-hook
-            ;            (lambda ()
-            ;              (define-key jedi-mode-map
-            ;                (kbd "C-M-\\") 'jedi:complete))))
             (define-key python-mode-map (kbd "C-c C-k")
               (lambda () (interactive)
                 (compile (format "python \"%s\"" (buffer-file-name)))))
@@ -148,8 +123,7 @@
 ;; https://github.com/gregsexton/ob-ipython/issues/28
 ;; This issue raises possibly in Emacs > 25.0.
 (setq python-shell-completion-native-enable nil)
-
-
+;; Trick to use pprint within Python shell
 (setq python-shell-setup-codes `("
 from pprint import pprint as __pprint
 import sys as __sys
@@ -271,14 +245,6 @@ __sys.displayhook = __pp_hook")
 (global-set-key (kbd "C-<down>") (lambda () (interactive) (scroll-up 2)))
 
 
-;; Easy debugging
-(add-hook 'gud-mode-hook 'gud-tooltip-mode)
-
-(global-set-key (kbd "<f7>") 'gud-step)
-(global-set-key (kbd "<f8>") 'gud-next)
-(global-set-key (kbd "S-<f8>") 'gud-finish)
-
-
 ;; Funny tools
 
 (defun split-window-multiple-ways (x y)
@@ -303,3 +269,90 @@ __sys.displayhook = __pp_hook")
 (defun wiki (arg)
   (interactive "MQuery the concept: ")
   (eww (format "https://en.wikipedia.org/wiki/%s" arg)))
+
+
+;; More
+(setq frame-title-format "%b")
+
+(eval-after-load 'smartparens
+  '(progn
+     (dolist (m '(compilation-mode
+                  comint-mode
+                  shell-mode))
+       (sp-local-pair m "(" nil :unless nil)
+       (sp-local-pair m "[" nil :unless nil)
+       (sp-local-pair m "'" nil :unless nil)
+       (sp-local-pair m "\"" nil :unless nil))))
+
+(condition-case err
+    (require 'dired-x)
+  (error
+   (message "Failed to require 'dired-x")))
+
+
+(global-set-key (kbd "M-n") nil)
+(global-set-key (kbd "M-n n") 'gud-next)
+(global-set-key (kbd "M-n s") 'gud-step)
+(global-set-key (kbd "M-n r") 'gud-cont)
+(global-set-key (kbd "M-n b") 'gud-break)
+
+
+(global-set-key (kbd "<f5>") (lambda () (interactive)
+                               (revert-buffer t t t)))
+
+
+(defun sql-command ()
+  (interactive)
+  (unwind-protect
+      (save-excursion
+        (when (not mark-active)
+          (mark-paragraph))
+        (setq stmt (buffer-substring (mark) (point)))
+        (goto-line 0)
+        (deactivate-mark)
+        (setq sql-pfx (buffer-substring (+ 3 (line-beginning-position)) (line-end-position)))
+        (setq sql-cmd (concat sql-pfx
+                              " -wc \""
+                              (replace-regexp-in-string "\"" "\\\\\"" stmt)
+                              "\""))
+        (setq sql-cmd (concat "echo \"$(" sql-cmd ")\""))
+        (async-shell-command sql-cmd
+                             (concat "===SQL: " (buffer-name) "==="))
+        )))
+
+(add-hook 'sql-mode-hook
+          (lambda ()
+            (define-key sql-mode-map (kbd "C-c <SPC>") 'sql-command)))
+
+(add-to-list 'evil-emacs-state-modes 'term-mode)
+(add-to-list 'evil-emacs-state-modes 'shell-mode)
+(add-to-list 'evil-emacs-state-modes 'dired-mode)
+
+
+(add-hook 'term-mode-hook (lambda () (interactive) (turn-off-evil-mode)))
+
+(defalias 'rnb 'rename-buffer)
+(global-set-key (kbd "<C-tab>") 'other-window)
+(global-set-key (kbd "<C-S-iso-lefttab>")
+                (lambda () (interactive) (other-window -1)))
+
+(global-set-key (kbd "<M-down>") 'windmove-down)
+(global-set-key (kbd "<M-up>") 'windmove-up)
+(global-set-key (kbd "<M-left>") 'windmove-left)
+(global-set-key (kbd "<M-right>") 'windmove-right)
+
+(global-set-key (kbd "<M-S-left>") 'previous-buffer)
+(global-set-key (kbd "<M-S-right>") 'next-buffer)
+
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (toggle-read-only))
+
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+(add-hook 'inferior-python-mode-hook 'ansi-color-for-comint-mode-on)
+
+
+;; 
+(message "My init.el buffer loading done.")
