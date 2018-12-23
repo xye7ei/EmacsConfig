@@ -146,7 +146,7 @@ __sys.displayhook = __pp_hook")
     (setq python-shell-interpreter "python")))
 
 
-;; Anaconda Python support. Use non-conflicting keys w.r.t. evil-mode.
+;; Anaconda Python support. Use non-conflicting keys against evil-mode.
 (when (fboundp 'anaconda-mode)
   (require 'anaconda-mode)
   (add-hook 'python-mode-hook 'anaconda-mode)
@@ -190,7 +190,12 @@ __sys.displayhook = __pp_hook")
 
 (when (fboundp 'evil-mode)
   (require 'evil)
-  (setq evil-want-C-u-scroll t))
+  (setq evil-want-C-u-scroll t)
+  (add-to-list 'evil-emacs-state-modes 'term-mode)
+  (add-to-list 'evil-emacs-state-modes 'shell-mode)
+  (add-to-list 'evil-emacs-state-modes 'dired-mode)
+  (add-to-list 'evil-emacs-state-modes 'compilation-mode)
+  (add-hook 'term-mode-hook (lambda () (interactive) (turn-off-evil-mode))))
 
 
 ;; Further utilities
@@ -324,13 +329,6 @@ __sys.displayhook = __pp_hook")
 (add-hook 'sql-mode-hook
           (lambda ()
             (define-key sql-mode-map (kbd "C-c <SPC>") 'sql-command)))
-
-(add-to-list 'evil-emacs-state-modes 'term-mode)
-(add-to-list 'evil-emacs-state-modes 'shell-mode)
-(add-to-list 'evil-emacs-state-modes 'dired-mode)
-
-
-(add-hook 'term-mode-hook (lambda () (interactive) (turn-off-evil-mode)))
 
 (defalias 'rnb 'rename-buffer)
 (global-set-key (kbd "<C-tab>") 'other-window)
