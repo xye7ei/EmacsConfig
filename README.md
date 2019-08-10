@@ -1,8 +1,9 @@
 # EmacsConfig
 
-This configuration targets **minimalism** of settings in the `init.el`. Remarkable are:
+This configuration targets convenient **minimalism** of settings in the `init.el`.
 
-- hooks for compilation;
-- selection of useful built-in minor modes.
+To retrieve the initial file:
 
-A bunch of interesting trials for using different major modes are organized in the folder `more`.
+``` bash
+curl https://raw.githubusercontent.com/Shellay/EmacsConfig/master/init.el > $HOME/.emacs.d/init.el
+```

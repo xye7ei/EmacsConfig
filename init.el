@@ -158,7 +158,7 @@ __sys.displayhook = __pp_hook")
               (define-key anaconda-mode-map (kbd "C-c g d") 'anaconda-mode-find-definitions)
               (define-key anaconda-mode-map (kbd "C-c g a") 'anaconda-mode-find-assignments)
               (define-key anaconda-mode-map (kbd "C-c g r") 'anaconda-mode-find-references)
-              (define-key anaconda-mode-map (kbd "C-c g b") 'anaconda-mode-go-back)
+              (define-key anaconda-mode-map (kbd "C-c g b") 'xref-pop-marker-stack)
               (define-key anaconda-mode-map (kbd "C-c d") 'anaconda-mode-show-doc)
               (define-key anaconda-mode-map (kbd "C-c s d") 'anaconda-mode-show-doc))))
 
